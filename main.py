@@ -7,12 +7,19 @@ from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-from send import send_mail
-from auth import get_access_token
-from validate import validate_json
-from extract import get_dataset, get_datasets
-from helpers import datasets_to_archive, extract_new_datasets, extract_overlapping_datasets, generate_question_answers, create_sync_array
-from queries import get_gateway_datasets, archive_gateway_datasets, add_new_datasets, get_publisher, sync_datasets, get_latest_gateway_dataset
+from functions.send import send_mail
+from functions.auth import get_access_token
+from functions.validate import validate_json
+from functions.extract import get_dataset, get_datasets
+from functions.helpers import datasets_to_archive, extract_new_datasets, extract_overlapping_datasets, generate_question_answers, create_sync_array
+from functions.queries import (
+    get_gateway_datasets,
+    archive_gateway_datasets,
+    add_new_datasets,
+    get_publisher,
+    sync_datasets,
+    get_latest_gateway_dataset,
+)
 
 
 def initialise_db(mongo_uri):
