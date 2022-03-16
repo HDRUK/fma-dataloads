@@ -11,6 +11,7 @@ sendgrid = "*"
 numpy = "*"
 jsonschema = "*"
 google-cloud-secret-manager = "*"
+google-cloud-logging = "*"
 
 [dev-packages]
 black = "*"
