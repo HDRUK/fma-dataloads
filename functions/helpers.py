@@ -204,7 +204,7 @@ def create_sync_array(datasets=[], sync_status="ok", publisher={}):
 
 def _keys_exists(element, *keys):
     """
-    INTERNAL: helper function two determine if a key exists in a dict.
+    INTERNAL: helper function to determine if a key exists in a dict.
     """
     _element = element
     for key in keys:
