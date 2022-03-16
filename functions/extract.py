@@ -26,8 +26,8 @@ def get_datasets(url="", access_token="", api_key=""):
             raise RequestException(f"A status code of {response.status_code} was received")
 
     except Exception as e:
-        print("Error retrieving datasets: ", e)
-        sys.exit(1)
+        print("Error retrieving list of datasets: ", e)
+        raise
 
 
 def get_dataset(url="", access_token="", dataset_id=""):
@@ -45,5 +45,5 @@ def get_dataset(url="", access_token="", dataset_id=""):
             raise RequestException(f"A status code of {response.status_code} was received")
 
     except Exception as e:
-        print("Error retrieving dataset: ", e)
-        sys.exit(1)
+        print("Error retrieving single dataset: ", e)
+        raise

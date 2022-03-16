@@ -1,8 +1,8 @@
-from distutils.log import ERROR
 import os
 import sys
 import uuid
 import json
+import argparse
 
 from datetime import datetime
 from dotenv import load_dotenv
@@ -10,6 +10,17 @@ from pymongo import MongoClient
 from google.cloud import logging
 
 from functions import *
+
+parser = argparse.ArgumentParser(description="Federated Metadata Automation ingestion script.")
+
+parser.add_argument(
+    "--publisher",
+    type=str,
+    help="The name of publisher matching the name in the HDRUK Gateway publisher collection (publisherDetails.name)",
+    required=True,
+)
+
+args = vars(parser.parse_args())
 
 
 def initialise_logging(log_name):
@@ -34,17 +45,23 @@ def initialise_db(mongo_uri):
 def main():
     try:
         LOG_NAME = os.getenv("LOGGING_LOG_NAME")
-        MONGO_URI = f'mongod://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}:{os.getenv("DATABASE_PORT")}/{os.getenv("DATABASE_DATABASE")}'
+        MONGO_URI = f'mongodb://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}:{os.getenv("DATABASE_PORT")}/{os.getenv("DATABASE_DATABASE")}'
+        CUSTODIAN_NAME = args["publisher"]
 
         logger = initialise_logging(LOG_NAME)
 
         db = initialise_db(MONGO_URI)
 
-        publisher = get_publisher(db=db, publisher_name=os.getenv("CUSTODIAN_NAME"))
+        ##########################################
+        # GET Publisher Details
+        ##########################################
 
-        if publisher["federation"]["active"] == False:
-            print("Federation is deactivated for this custodian")
-            sys.exit(1)
+        publisher = get_publisher(db=db, publisher_name=CUSTODIAN_NAME)
+
+        if publisher["federation"]["active"] != True:
+            raise ValueError(f"Federation is deactivated for custodian {CUSTODIAN_NAME}")
+
+        logger.log_text(f"Initiating FMA ingestion for {CUSTODIAN_NAME}", severity="INFO")
 
         ##########################################
         # GET Datasets from Custodian and Gateway
@@ -197,14 +214,13 @@ def main():
             sync_datasets(db=db, sync_list=sync_list)
 
         ##########################################
-        # Emails and Notifications
+        # Emails
         ##########################################
 
-        # Send mail
         send_mail(publisher=publisher, archived_datasets=archived_datasets, new_datasets=valid_datasets, failed_validation=invalid_datasets)
 
     except Exception as e:
-        logger.log_text(str(e), severity="ERROR")
+        logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
         sys.exit(1)
 
 

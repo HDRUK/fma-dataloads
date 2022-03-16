@@ -1,5 +1,4 @@
 import sys
-import ast
 import json
 import requests
 
@@ -24,7 +23,7 @@ def get_access_token(token_url="", client_id="", client_secret=""):
 
     except Exception as e:
         print("Error retrieving access token: ", e)
-        sys.exit(1)
+        raise
 
 
 def get_client_secret(secret_name=""):
@@ -40,4 +39,4 @@ def get_client_secret(secret_name=""):
 
     except Exception as e:
         print("Error retrieving secrets from GCP: ", e)
-        sys.exit(1)
+        raise

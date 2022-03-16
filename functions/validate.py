@@ -1,4 +1,3 @@
-import sys
 import requests
 
 from requests import RequestException
@@ -27,4 +26,4 @@ def validate_json(schema_url, dataset):
         return
     except RequestException as e:
         print("Error retrieving datasetv2 validation schema: ", e)
-        sys.exit(1)
+        raise
