@@ -217,10 +217,11 @@ def main():
         # Emails
         ##########################################
 
-        send_mail(publisher=publisher, archived_datasets=archived_datasets, new_datasets=valid_datasets, failed_validation=invalid_datasets)
+        send_summary_mail(publisher=publisher, archived_datasets=archived_datasets, new_datasets=valid_datasets, failed_validation=invalid_datasets)
 
     except Exception as e:
         logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
+        send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
         sys.exit(1)
 
 
