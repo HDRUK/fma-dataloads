@@ -217,7 +217,10 @@ def main():
         # Emails
         ##########################################
 
-        send_summary_mail(publisher=publisher, archived_datasets=archived_datasets, new_datasets=valid_datasets, failed_validation=invalid_datasets)
+        if len(archive_gateway_datasets) > 0 and len(new_datasets) > 0 and len(invalid_datasets) > 0:
+            send_summary_mail(
+                publisher=publisher, archived_datasets=archived_datasets, new_datasets=valid_datasets, failed_validation=invalid_datasets
+            )
 
     except Exception as e:
         logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
