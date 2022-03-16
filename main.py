@@ -35,19 +35,22 @@ def main():
     # GET Datasets from Custodian and Gateway
     ##########################################
 
+    auth_token = ""
+
     secret_name = publisher["federation"]["auth"]["secretKey"]
 
     custodian_datasets_url = publisher["federation"]["endpoints"]["baseURL"] + publisher["federation"]["endpoints"]["datasets"]
 
     if publisher["federation"]["auth"]["type"] == "oauth":
         custodian_token_url = publisher["federation"]["endpoints"]["baseURL"] + "/oauth/token"
-        auth = get_client_secret(secret_name=secret_name)
-        access_token = get_access_token(custodian_token_url, auth["client_id"], auth["client_secret"])
-        custodian_datasets = get_datasets(custodian_datasets_url, access_token=access_token)
+        secrets = get_client_secret(secret_name=secret_name)
+        auth_token = get_access_token(custodian_token_url, secrets["client_id"], secrets["client_secret"])
+        custodian_datasets = get_datasets(custodian_datasets_url, access_token=auth_token)
 
     elif publisher["federation"]["auth"]["type"] == "api_key":
-        auth = get_client_secret(secret_name=secret_name)
-        custodian_datasets = get_datasets(custodian_datasets_url, api_key=auth["api_key"])
+        secrets = get_client_secret(secret_name=secret_name)
+        auth_token = secrets["api_key"]
+        custodian_datasets = get_datasets(custodian_datasets_url, api_key=secrets["api_key"])
 
     else:
         custodian_datasets = get_datasets(custodian_datasets_url)
