@@ -10,6 +10,7 @@ pymongo = "*"
 sendgrid = "*"
 numpy = "*"
 jsonschema = "*"
+google-cloud-secret-manager = "*"
 
 [dev-packages]
 black = "*"

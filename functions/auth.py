@@ -1,7 +1,10 @@
 import sys
+import ast
+import json
 import requests
 
 from requests import RequestException
+from google.cloud import secretmanager
 
 
 def get_access_token(token_url="", client_id="", client_secret=""):
@@ -21,4 +24,20 @@ def get_access_token(token_url="", client_id="", client_secret=""):
 
     except Exception as e:
         print("Error retrieving access token: ", e)
+        sys.exit(1)
+
+
+def get_client_secret(secret_name=""):
+    """
+    Retrieve secret from the Google Secret Manager given a secret name.
+    """
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+
+        response = client.access_secret_version(request={"name": secret_name})
+
+        return json.loads(response.payload.data.decode("utf8").replace("'", '"'))
+
+    except Exception as e:
+        print("Error retrieving secrets from GCP: ", e)
         sys.exit(1)
