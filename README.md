@@ -19,6 +19,4 @@ EMAIL_ADMIN=<<email address to send error notification to>>
 
 // Dataset validation
 DEFAULT_SCHEMA_URL=<<default v2 schema URL in case schema is not given by provider>>
-
-// More to follow...
 ```
