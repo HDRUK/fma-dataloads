@@ -1,3 +1,5 @@
+import uuid
+import json
 import numpy as np
 
 from datetime import datetime
@@ -57,9 +59,49 @@ def extract_overlapping_datasets(custodian_datasets, gateway_datasets):
     return custodian_versions, gateway_versions
 
 
-def generate_question_answers(dataset):
+def transform_dataset(dataset={}, activeflag=""):
     """
-    Generate the Gateway questionAnswers field given a datasetv2 object.
+    Given a datasetv2 format object, tranform to the required Gateway format with a given activeflag.
+    """
+    return {
+        "datasetv2": dataset,
+        "name": dataset["summary"]["title"],
+        "datasetVersion": dataset["version"],
+        "type": "dataset",
+        "pid": dataset["identifier"],
+        "datasetid": str(uuid.uuid4()),
+        "questionAnswers": json.dumps(_generate_question_answers(dataset)),
+        "activeflag": activeflag,
+        "is5Safes": True,
+        "structuralMetadata": dataset["structuralMetadata"],
+        "timestamps": {"created": datetime.now(), "updated": datetime.now(), "submitted": datetime.now()},
+        "source": "FMA",
+        "createdAt": datetime.now(),
+        "updatedAt": datetime.now(),
+    }
+
+
+def create_sync_array(datasets=[], sync_status="ok", publisher={}):
+    """
+    Given a list of datasets, create a list of sync objects with a given status for addition to the Gateway sync collection.
+    """
+    return list(
+        map(
+            lambda x: {
+                "publisherName": publisher["publisherDetails"]["name"],
+                "pid": x["pid"],
+                "version": x["datasetVersion"],
+                "status": sync_status,
+                "lastSync": datetime.now(),
+            },
+            datasets,
+        )
+    )
+
+
+def _generate_question_answers(dataset):
+    """
+    INTERNAL: generate the Gateway questionAnswers field given a datasetv2 object.
     """
     question_answers = {}
 
@@ -182,24 +224,6 @@ def generate_question_answers(dataset):
             id += 1
 
     return question_answers
-
-
-def create_sync_array(datasets=[], sync_status="ok", publisher={}):
-    """
-    Given a list of datasets, create a list of sync objects with a given status for addition to the Gateway sync collection.
-    """
-    return list(
-        map(
-            lambda x: {
-                "publisherName": publisher["publisherDetails"]["name"],
-                "pid": x["pid"],
-                "version": x["datasetVersion"],
-                "status": sync_status,
-                "lastSync": datetime.now(),
-            },
-            datasets,
-        )
-    )
 
 
 def _keys_exists(element, *keys):

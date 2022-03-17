@@ -1,7 +1,5 @@
 import os
 import sys
-import uuid
-import json
 import argparse
 
 from datetime import datetime
@@ -116,25 +114,7 @@ def main():
             if not_valid := validate_json(validation_schema, dataset):
                 invalid_datasets.append(not_valid)
             else:
-                question_answers = generate_question_answers(dataset)
-                valid_datasets.append(
-                    {
-                        "datasetv2": dataset,
-                        "name": dataset["summary"]["title"],
-                        "datasetVersion": dataset["version"],
-                        "type": "dataset",
-                        "pid": dataset["identifier"],
-                        "datasetid": str(uuid.uuid4()),
-                        "questionAnswers": json.dumps(question_answers),
-                        "activeflag": "inReview",
-                        "is5Safes": True,
-                        "structuralMetadata": dataset["structuralMetadata"],
-                        "timestamps": {"created": datetime.now(), "updated": datetime.now(), "submitted": datetime.now()},
-                        "source": "FMA",
-                        "createdAt": datetime.now(),
-                        "updatedAt": datetime.now(),
-                    }
-                )
+                valid_datasets.append(transform_dataset(dataset=dataset, activeflag="inReview"))
 
         ##########################################
         # UPDATE logic
@@ -174,25 +154,7 @@ def main():
                     if latest_dataset["datasetVersion"] != "active":
                         activeflag = "inReview"
 
-                    question_answers = generate_question_answers(new_datasetv2)
-                    valid_datasets.append(
-                        {
-                            "datasetv2": new_datasetv2,
-                            "name": new_datasetv2["summary"]["title"],
-                            "datasetVersion": new_datasetv2["version"],
-                            "type": "dataset",
-                            "pid": i["pid"],
-                            "datasetid": str(uuid.uuid4()),
-                            "questionAnswers": json.dumps(question_answers),
-                            "activeflag": activeflag,
-                            "is5Safes": True,
-                            "structuralMetadata": new_datasetv2["structuralMetadata"],
-                            "timestamps": {"created": datetime.now(), "updated": datetime.now(), "submitted": datetime.now()},
-                            "source": "FMA",
-                            "createdAt": datetime.now(),
-                            "updatedAt": datetime.now(),
-                        }
-                    )
+                    valid_datasets.append(transform_dataset(dataset=new_datasetv2, activeflag=activeflag))
                     archived_datasets.append(i)
 
         ##########################################
