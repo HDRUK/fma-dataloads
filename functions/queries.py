@@ -65,11 +65,11 @@ def get_publisher(db, publisher_name):
 
 def sync_datasets(db, sync_list=[]):
     """
-    Remove any existing sync status for a given PID and add new sync entry
+    Remove any existing sync status for a given PID and add new sync entry.
     """
     try:
         db.sync.delete_many({"pid": {"$in": list(map(lambda x: x["pid"], sync_list))}})
         db.sync.insert_many(sync_list)
     except Exception as e:
-        print("Erro updating the sync collection: ", e)
+        print("Error updating the sync collection: ", e)
         raise
