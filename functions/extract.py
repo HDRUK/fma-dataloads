@@ -4,18 +4,13 @@ import requests
 from requests import RequestException
 
 
-def get_datasets(url="", access_token="", api_key=""):
+def get_datasets(url="", auth_token=""):
     """
     GET: extract the list of datasets from the target server.
     """
-    try:
-        if access_token:
-            headers = {"Authorization": access_token}
-        elif api_key:
-            headers = {"Authorization": "Basic " + api_key}
-        else:
-            headers = {}
+    headers = {"Authorization": auth_token}
 
+    try:
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
@@ -30,12 +25,14 @@ def get_datasets(url="", access_token="", api_key=""):
         raise
 
 
-def get_dataset(url="", access_token="", dataset_id=""):
+def get_dataset(url="", auth_token="", dataset_id=""):
     """
     GET: extract a single dataset from the target server.
     """
+    headers = {"Authorization": auth_token}
+
     try:
-        response = requests.get(url + "/" + str(dataset_id), headers={"Authorization": access_token})
+        response = requests.get(url + "/" + str(dataset_id), headers=headers)
 
         if response.status_code == 200:
             data = response.json()

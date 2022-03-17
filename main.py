@@ -76,13 +76,14 @@ def main():
         if publisher["federation"]["auth"]["type"] == "oauth":
             custodian_token_url = publisher["federation"]["endpoints"]["baseURL"] + "/oauth/token"
             secrets = get_client_secret(secret_name=secret_name)
-            auth_token = get_access_token(custodian_token_url, secrets["client_id"], secrets["client_secret"])
-            custodian_datasets = get_datasets(custodian_datasets_url, access_token=auth_token)
+            access_token = get_access_token(custodian_token_url, secrets["client_id"], secrets["client_secret"])
+            auth_token = f"Bearer {access_token}"
+            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
 
         elif publisher["federation"]["auth"]["type"] == "api_key":
             secrets = get_client_secret(secret_name=secret_name)
-            auth_token = secrets["api_key"]
-            custodian_datasets = get_datasets(custodian_datasets_url, api_key=secrets["api_key"])
+            auth_token = f"Basic {secrets['api_key']}"
+            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
 
         else:
             custodian_datasets = get_datasets(custodian_datasets_url)
@@ -223,6 +224,7 @@ def main():
             )
 
     except Exception as e:
+        print(str(e))
         logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
         send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
         sys.exit(1)
