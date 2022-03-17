@@ -1,11 +1,6 @@
 from functions.helpers import *
 
-custodian_datasets = [
-    {"identifier": "xyz"},
-    {"identifier": "abc"},
-    {"identifier": "pqr"},
-    {"identifier": "mno"},
-]
+custodian_datasets = [{"identifier": "xyz"}, {"identifier": "abc"}, {"identifier": "pqr"}, {"identifier": "mno"}]
 gateway_datasets = [{"pid": "xyz"}, {"pid": "abc"}, {"pid": "pqr"}, {"pid": "def"}]
 
 
@@ -30,15 +25,12 @@ def test_datasets_to_add():
 
 
 def test_extract_overlapping_datasets():
-    datasets_1, datasets_2 = extract_overlapping_datasets(
-        custodian_datasets, gateway_datasets
-    )
+    """
+    Function should identify overlapping datasets two lists of datasets.
+    """
+    datasets_1, datasets_2 = extract_overlapping_datasets(custodian_datasets, gateway_datasets)
 
-    expected_datasets_1 = [
-        {"identifier": "xyz"},
-        {"identifier": "abc"},
-        {"identifier": "pqr"},
-    ]
+    expected_datasets_1 = [{"identifier": "xyz"}, {"identifier": "abc"}, {"identifier": "pqr"}]
     expected_datasets_2 = [{"pid": "xyz"}, {"pid": "abc"}, {"pid": "pqr"}]
 
     assert len(datasets_1) == 3
