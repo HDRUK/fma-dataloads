@@ -9,6 +9,7 @@ from google.cloud import logging
 
 from functions import *
 
+
 parser = argparse.ArgumentParser(
     description="Federated Metadata Automation ingestion script."
 )
@@ -23,33 +24,14 @@ parser.add_argument(
 args = vars(parser.parse_args())
 
 
-def initialise_logging(log_name):
-    try:
-        client = logging.Client()
-        logger = client.logger(log_name)
-        return logger
-    except Exception as e:
-        print("Error instantiating logger: ", e)
-        raise
-
-
-def initialise_db(mongo_uri):
-    try:
-        db = MongoClient(mongo_uri)[os.getenv("DATABASE_DATABASE")]
-        return db
-    except Exception as e:
-        print("Error connecting to database: ", e)
-        raise
+LOG_NAME = os.getenv("LOGGING_LOG_NAME")
+MONGO_URI = f'mongodb://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}:{os.getenv("DATABASE_PORT")}/{os.getenv("DATABASE_DATABASE")}'
+CUSTODIAN_NAME = args["publisher"]
 
 
 def main():
     try:
-        LOG_NAME = os.getenv("LOGGING_LOG_NAME")
-        MONGO_URI = f'mongodb://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}:{os.getenv("DATABASE_PORT")}/{os.getenv("DATABASE_DATABASE")}'
-        CUSTODIAN_NAME = args["publisher"]
-
         logger = initialise_logging(LOG_NAME)
-
         db = initialise_db(MONGO_URI)
 
         ##########################################
@@ -270,11 +252,31 @@ def main():
             )
 
     except Exception as e:
+        # Critical error raised, log error, send an error email and exit the script
         logger.log_struct(
             {"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR"
         )
         send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
         sys.exit(1)
+
+
+def initialise_logging(log_name):
+    try:
+        client = logging.Client()
+        logger = client.logger(log_name)
+        return logger
+    except Exception as e:
+        print("Error instantiating logger: ", e)
+        raise
+
+
+def initialise_db(mongo_uri):
+    try:
+        db = MongoClient(mongo_uri)[os.getenv("DATABASE_DATABASE")]
+        return db
+    except Exception as e:
+        print("Error connecting to database: ", e)
+        raise
 
 
 if __name__ == "__main__":
