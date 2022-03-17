@@ -38,9 +38,7 @@ def get_client_secret(secret_name=""):
 
         response = client.access_secret_version(request={"name": secret_name})
 
-        return json.loads(
-            response.payload.data.decode("utf8").replace("'", '"')
-        )
+        return json.loads(response.payload.data.decode("utf8").replace("'", '"'))
 
     except Exception as e:
         print("Error retrieving secrets from GCP: ", e)

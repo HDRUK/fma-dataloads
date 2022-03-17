@@ -22,9 +22,7 @@ def validate_json(schema_url, dataset):
         if len(errors) > 0:
             error_details = []
             for error in errors:
-                error_details.append(
-                    {"error": error.message, "path": list(error.path)}
-                )
+                error_details.append({"error": error.message, "path": list(error.path)})
             return {"dataset": dataset, "errors": error_details}
 
         return
