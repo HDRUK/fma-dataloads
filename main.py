@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description="Federated Metadata Automation inge
 parser.add_argument(
     "--publisher",
     type=str,
-    help="The name of publisher matching the name in the HDRUK Gateway publisher collection (publisherDetails.name)",
+    help="The name of publisher/custodian matching the name saved in the HDRUK Gateway publisher collection (publisherDetails.name)",
     required=True,
 )
 
