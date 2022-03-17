@@ -5,10 +5,6 @@ import datetime
 from sendgrid.helpers.mail import *
 
 
-class EmailError:
-    pass
-
-
 def send_summary_mail(publisher={}, archived_datasets=[], new_datasets=[], failed_validation=[]):
     """
     Send a formatted email to the relevant parties.
