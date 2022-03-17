@@ -18,7 +18,9 @@ def get_datasets(url="", auth_token=""):
 
             return data["items"]
         else:
-            raise RequestException(f"A status code of {response.status_code} was received")
+            raise RequestException(
+                f"A status code of {response.status_code} was received"
+            )
 
     except Exception as e:
         print("Error retrieving list of datasets: ", e)
@@ -39,7 +41,9 @@ def get_dataset(url="", auth_token="", dataset_id=""):
 
             return data
         else:
-            raise RequestException(f"A status code of {response.status_code} was received")
+            raise RequestException(
+                f"A status code of {response.status_code} was received"
+            )
 
     except Exception as e:
         print("Error retrieving single dataset: ", e)

@@ -12,7 +12,9 @@ def validate_json(schema_url, dataset):
         schema = requests.get(schema_url)
 
         if schema.status_code != 200:
-            raise RequestException(f"A status code of {schema.status_code} was received")
+            raise RequestException(
+                f"A status code of {schema.status_code} was received"
+            )
 
         validator = Draft7Validator(schema=schema.json())
         errors = list(validator.iter_errors(dataset))
@@ -20,7 +22,9 @@ def validate_json(schema_url, dataset):
         if len(errors) > 0:
             error_details = []
             for error in errors:
-                error_details.append({"error": error.message, "path": list(error.path)})
+                error_details.append(
+                    {"error": error.message, "path": list(error.path)}
+                )
             return {"dataset": dataset, "errors": error_details}
 
         return
