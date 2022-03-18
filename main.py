@@ -71,8 +71,7 @@ def main():
 
         if publisher["federation"]["auth"]["type"] == "oauth":
             custodian_token_url = (
-                publisher["federation"]["endpoints"]["baseURL"]
-                + "/oauth/token"
+                publisher["federation"]["endpoints"]["baseURL"] + "/oauth/token"
             )
             secrets = get_client_secret(secret_name=secret_name)
             access_token = get_access_token(
@@ -81,49 +80,37 @@ def main():
                 secrets["client_secret"],
             )
             auth_token = f"Bearer {access_token}"
-            custodian_datasets = get_datasets(
-                custodian_datasets_url, auth_token
-            )
+            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
 
         elif publisher["federation"]["auth"]["type"] == "api_key":
             secrets = get_client_secret(secret_name=secret_name)
             auth_token = f"Basic {secrets['api_key']}"
-            custodian_datasets = get_datasets(
-                custodian_datasets_url, auth_token
-            )
+            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
 
         else:
             custodian_datasets = get_datasets(custodian_datasets_url)
 
         gateway_datasets = list(
-            get_gateway_datasets(
-                db=db, publisher=publisher["publisherDetails"]["name"]
-            )
+            get_gateway_datasets(db=db, publisher=publisher["publisherDetails"]["name"])
         )
 
         ##########################################
         # ARCHIVE logic
         ##########################################
 
-        archived_datasets = datasets_to_archive(
-            custodian_datasets, gateway_datasets
-        )
+        archived_datasets = datasets_to_archive(custodian_datasets, gateway_datasets)
 
         ##########################################
         # ADDITION logic
         ##########################################
 
-        new_datasets = extract_new_datasets(
-            custodian_datasets, gateway_datasets
-        )
+        new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
         invalid_datasets = []
         valid_datasets = []
 
         for i in new_datasets:
-            dataset = get_dataset(
-                custodian_datasets_url, auth_token, i["identifier"]
-            )
+            dataset = get_dataset(custodian_datasets_url, auth_token, i["identifier"])
 
             validation_schema = i["@schema"] if "@schema" in i else ""
 
@@ -146,9 +133,7 @@ def main():
             (
                 custodian_versions,
                 gateway_versions,
-            ) = extract_overlapping_datasets(
-                custodian_datasets, gateway_datasets
-            )
+            ) = extract_overlapping_datasets(custodian_datasets, gateway_datasets)
 
             for i in gateway_versions:
                 custodian_version = list(
@@ -158,14 +143,11 @@ def main():
                     )
                 )[0]
 
-                time_elapsed = datetime.timestamp(
-                    datetime.now()
-                ) - datetime.timestamp(i["lastSync"])
+                time_elapsed = datetime.timestamp(datetime.now()) - datetime.timestamp(
+                    i["lastSync"]
+                )
 
-                if (
-                    i["status"] == "ok"
-                    and i["version"] == custodian_version["version"]
-                ):
+                if i["status"] == "ok" and i["version"] == custodian_version["version"]:
                     # No version change - move to next dataset
                     continue
 
@@ -188,24 +170,18 @@ def main():
                 if not validation_schema:
                     validation_schema = os.getenv("DEFAULT_SCHEMA_URL")
 
-                if not_valid := validate_json(
-                    validation_schema, new_datasetv2
-                ):
+                if not_valid := validate_json(validation_schema, new_datasetv2):
                     invalid_datasets.append(not_valid)
                 else:
                     activeflag = "active"
 
-                    latest_dataset = get_latest_gateway_dataset(
-                        db=db, pid=i["pid"]
-                    )
+                    latest_dataset = get_latest_gateway_dataset(db=db, pid=i["pid"])
 
                     if latest_dataset["datasetVersion"] != "active":
                         activeflag = "inReview"
 
                     valid_datasets.append(
-                        transform_dataset(
-                            dataset=new_datasetv2, activeflag=activeflag
-                        )
+                        transform_dataset(dataset=new_datasetv2, activeflag=activeflag)
                     )
                     archived_datasets.append(i)
 
@@ -216,9 +192,7 @@ def main():
         sync_list = []
 
         if len(archived_datasets) > 0:
-            archive_gateway_datasets(
-                db=db, archived_datasets=archived_datasets
-            )
+            archive_gateway_datasets(db=db, archived_datasets=archived_datasets)
 
         if len(valid_datasets) > 0:
             add_new_datasets(db=db, new_datasets=valid_datasets)
@@ -260,9 +234,7 @@ def main():
 
     except Exception as e:
         # Critical error raised, log error, send an error email and exit the script
-        logger.log_struct(
-            {"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR"
-        )
+        logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
         send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
         sys.exit(1)
 

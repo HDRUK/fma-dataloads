@@ -11,7 +11,9 @@ def send_summary_mail(
     """
     Send a formatted email to the relevant parties.
     """
-    subject = f"Federated Metadata Sync - {datetime.datetime.now().strftime('%d-%m-%y')}"
+    subject = (
+        f"Federated Metadata Sync - {datetime.datetime.now().strftime('%d-%m-%y')}"
+    )
     message = "<h2>Synchronisation results</h2>"
 
     if len(archived_datasets) > 0:
@@ -22,9 +24,7 @@ def send_summary_mail(
     if len(new_datasets) > 0:
         message += "<br><b>The following dataset versions have been added to the Gateway:</b><br><br>"
         for i in new_datasets:
-            message += (
-                f"<b>Dataset ID: </b>{i['pid']} (v {i['datasetVersion']})<br>"
-            )
+            message += f"<b>Dataset ID: </b>{i['pid']} (v {i['datasetVersion']})<br>"
 
     if len(failed_validation) > 0:
         message += "<br><b>The following datasets have failed validation:</b><br /><br>"
@@ -39,14 +39,10 @@ def send_summary_mail(
 
 
 def send_error_mail(publisher_name="", error=""):
-    message = (
-        f"Fully syncing with the {publisher_name} API has failed: " + error
-    )
+    message = f"Fully syncing with the {publisher_name} API has failed: " + error
     subject = f"Error syncing federated datasets for {publisher_name} - {datetime.datetime.now().strftime('%d-%m-%y')}"
 
-    _send_mail(
-        message=message, subject=subject, email_to=os.getenv("EMAIL_ADMIN")
-    )
+    _send_mail(message=message, subject=subject, email_to=os.getenv("EMAIL_ADMIN"))
 
 
 def _send_mail(
