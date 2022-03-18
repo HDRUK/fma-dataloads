@@ -33,18 +33,11 @@ def get_dataset(url="", auth_token="", dataset_id=""):
     """
     headers = {"Authorization": auth_token}
 
-    try:
-        response = requests.get(url + "/" + str(dataset_id), headers=headers)
+    response = requests.get(url + "/" + str(dataset_id), headers=headers)
 
-        if response.status_code == 200:
-            data = response.json()
+    if response.status_code == 200:
+        data = response.json()
 
-            return data
-        else:
-            raise RequestException(
-                f"A status code of {response.status_code} was received"
-            )
-
-    except Exception as e:
-        print("Error retrieving single dataset: ", e)
-        raise
+        return data
+    else:
+        raise RequestException(f"A status code of {response.status_code} was received")

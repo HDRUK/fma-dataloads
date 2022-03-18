@@ -129,12 +129,21 @@ def create_sync_array(datasets=[], sync_status="ok", publisher={}):
     """
     Given a list of datasets, create a list of sync objects with a given status for addition to the Gateway sync collection.
     """
+    pid_key = "pid"
+    version_key = "datasetVersion"
+
+    if "pid" not in datasets[0].keys():
+        pid_key = "identifier"
+
+    if "datasetVersion" not in datasets[0].keys():
+        version_key = "version"
+
     return list(
         map(
             lambda x: {
                 "publisherName": publisher["publisherDetails"]["name"],
-                "pid": x["pid"],
-                "version": x["datasetVersion"],
+                "pid": x[pid_key],
+                "version": x[version_key],
                 "status": sync_status,
                 "lastSync": datetime.now(),
             },

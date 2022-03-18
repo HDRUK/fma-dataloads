@@ -6,7 +6,9 @@ def get_gateway_datasets(db, publisher):
     Get a list of datasets from the Gateway relevant to a given custodian (i.e., publisher).
     """
     try:
-        datasets = db.sync.find({"publisherName": publisher})
+        datasets = db.sync.find(
+            {"publisherName": publisher, "status": {"$ne": "fetch_failed_new_dataset"}},
+        )
 
         return datasets
     except Exception as e:

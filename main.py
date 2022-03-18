@@ -38,6 +38,7 @@ CUSTODIAN_NAME = args["publisher"]
 
 def main():
     try:
+        sync_list = []
         logger = initialise_logging(LOG_NAME)
         db = initialise_db(MONGO_URI)
 
@@ -110,7 +111,21 @@ def main():
         valid_datasets = []
 
         for i in new_datasets:
-            dataset = get_dataset(custodian_datasets_url, auth_token, i["identifier"])
+            try:
+                dataset = get_dataset(
+                    custodian_datasets_url, auth_token, i["identifier"]
+                )
+            except RequestException as e:
+                # Fetching single dataset failed - update sync status
+                print(f'Error retrieving new dataset {i["identifier"]}:', e)
+                sync_list.extend(
+                    create_sync_array(
+                        datasets=[i],
+                        sync_status="fetch_failed_new_dataset",
+                        publisher=publisher,
+                    )
+                )
+                continue
 
             validation_schema = i["@schema"] if "@schema" in i else ""
 
@@ -153,11 +168,26 @@ def main():
                     # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
-                new_datasetv2 = get_dataset(
-                    custodian_datasets_url,
-                    auth_token,
-                    custodian_version["identifier"],
-                )
+                try:
+                    new_datasetv2 = get_dataset(
+                        custodian_datasets_url,
+                        auth_token,
+                        custodian_version["identifier"],
+                    )
+                except RequestException as e:
+                    # Fetching single dataset failed - update sync status
+                    print(
+                        f'Error retrieving new dataset {custodian_version["identifier"]}:',
+                        e,
+                    )
+                    sync_list.extend(
+                        create_sync_array(
+                            datasets=[i],
+                            sync_status="fetch_failed_updated_dataset",
+                            publisher=publisher,
+                        )
+                    )
+                    continue
 
                 validation_schema = (
                     custodian_version["@schema"]
@@ -185,8 +215,6 @@ def main():
         ##########################################
         # Database operations
         ##########################################
-
-        sync_list = []
 
         if len(archived_datasets) > 0:
             archive_gateway_datasets(db=db, archived_datasets=archived_datasets)
@@ -230,6 +258,7 @@ def main():
             )
 
     except Exception as e:
+        print(e)
         # Critical error raised, log error, send an error email and exit the script
         logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
         send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
