@@ -120,9 +120,7 @@ def main():
             if not_valid := validate_json(validation_schema, dataset):
                 invalid_datasets.append(not_valid)
             else:
-                valid_datasets.append(
-                    transform_dataset(dataset=dataset, activeflag="inReview")
-                )
+                valid_datasets.append(transform_dataset(dataset=dataset))
 
         ##########################################
         # UPDATE logic
@@ -173,17 +171,16 @@ def main():
                 if not_valid := validate_json(validation_schema, new_datasetv2):
                     invalid_datasets.append(not_valid)
                 else:
-                    activeflag = "active"
-
                     latest_dataset = get_latest_gateway_dataset(db=db, pid=i["pid"])
 
-                    if latest_dataset["datasetVersion"] != "active":
-                        activeflag = "inReview"
-
                     valid_datasets.append(
-                        transform_dataset(dataset=new_datasetv2, activeflag=activeflag)
+                        transform_dataset(
+                            dataset=new_datasetv2, previous_version=latest_dataset
+                        )
                     )
-                    archived_datasets.append(i)
+                    if latest_dataset["datasetVersion"] in ["active", "inReview"]:
+                        # Only archive previously active or inReview datasets, keep rejected datasets as rejected
+                        archived_datasets.append(i)
 
         ##########################################
         # Database operations

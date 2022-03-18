@@ -78,30 +78,51 @@ def extract_overlapping_datasets(custodian_datasets, gateway_datasets):
     return custodian_versions, gateway_versions
 
 
-def transform_dataset(dataset={}, activeflag=""):
+def transform_dataset(dataset={}, previous_version={}):
     """
-    Given a datasetv2 format object, tranform to the required Gateway format with a given activeflag.
+    Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
     """
-    return {
-        "datasetv2": dataset,
-        "name": dataset["summary"]["title"],
-        "datasetVersion": dataset["version"],
-        "type": "dataset",
-        "pid": dataset["identifier"],
-        "datasetid": str(uuid.uuid4()),
-        "questionAnswers": json.dumps(_generate_question_answers(dataset)),
-        "activeflag": activeflag,
-        "is5Safes": True,
-        "structuralMetadata": dataset["structuralMetadata"],
-        "timestamps": {
-            "created": datetime.now(),
-            "updated": datetime.now(),
-            "submitted": datetime.now(),
-        },
-        "source": "FMA",
-        "createdAt": datetime.now(),
-        "updatedAt": datetime.now(),
-    }
+    try:
+        formatted_dataset = {
+            "datasetv2": dataset,
+            "name": dataset["summary"]["title"],
+            "datasetVersion": dataset["version"],
+            "type": "dataset",
+            "pid": dataset["identifier"],
+            "datasetfields": {},
+            "datasetid": str(uuid.uuid4()),
+            "questionAnswers": json.dumps(_generate_question_answers(dataset)),
+            "activeflag": "inReview",
+            "is5Safes": True,
+            "structuralMetadata": dataset["structuralMetadata"],
+            "timestamps": {
+                "created": datetime.now(),
+                "updated": datetime.now(),
+                "submitted": datetime.now(),
+            },
+            "tags": {
+                "features": dataset["summary"]["keywords"],
+            },
+            "source": "FMA",
+            "createdAt": datetime.now(),
+            "updatedAt": datetime.now(),
+        }
+
+        if previous_version:
+            formatted_dataset["datasetfields"] = previous_version["datasetfields"]
+
+        if previous_version and previous_version["activeflag"] == "active":
+            formatted_dataset["activeflag"] = "active"
+            formatted_dataset["timestamps"]["published"] = datetime.now()
+
+        return formatted_dataset
+
+    except KeyError as e:
+        print("Key error when transforming the datasets: ", e)
+        raise
+    except Exception as e:
+        print("Error transoforming the datasets: ", e)
+        raise
 
 
 def create_sync_array(datasets=[], sync_status="ok", publisher={}):

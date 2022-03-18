@@ -36,11 +36,7 @@ def archive_gateway_datasets(db, archived_datasets=[]):
     """
     try:
         db.tools.update_many(
-            {
-                "datasetv2.identifier": {
-                    "$in": list(map(lambda x: x["pid"], archived_datasets))
-                }
-            },
+            {"pid": {"$in": list(map(lambda x: x["pid"], archived_datasets))}},
             {"$set": {"activeflag": "archive"}},
         )
     except Exception as e:
