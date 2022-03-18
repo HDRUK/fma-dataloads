@@ -248,8 +248,8 @@ def main():
 
         if (
             len(archived_datasets) > 0
-            and len(valid_datasets) > 0
-            and len(invalid_datasets) > 0
+            or len(valid_datasets) > 0
+            or len(invalid_datasets) > 0
         ):
             send_summary_mail(
                 publisher=publisher,
