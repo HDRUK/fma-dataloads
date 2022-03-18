@@ -25,7 +25,14 @@ args = vars(parser.parse_args())
 
 
 LOG_NAME = os.getenv("LOGGING_LOG_NAME")
-MONGO_URI = f'mongodb://{os.getenv("DATABASE_USER")}:{os.getenv("DATABASE_PASSWORD")}@{os.getenv("DATABASE_HOST")}:{os.getenv("DATABASE_PORT")}/{os.getenv("DATABASE_DATABASE")}'
+MONGO_URI = (
+    "mongodb://"
+    f'{os.getenv("DATABASE_USER")}:'
+    f'{os.getenv("DATABASE_PASSWORD")}@'
+    f'{os.getenv("DATABASE_HOST")}:'
+    f'{os.getenv("DATABASE_PORT")}/'
+    f'{os.getenv("DATABASE_DATABASE")}'
+)
 CUSTODIAN_NAME = args["publisher"]
 
 
