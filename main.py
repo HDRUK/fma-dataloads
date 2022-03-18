@@ -121,7 +121,7 @@ def main():
                 sync_list.extend(
                     create_sync_array(
                         datasets=[i],
-                        sync_status="fetch_failed_new_dataset",
+                        sync_status="fetch_failed_new",
                         publisher=publisher,
                     )
                 )
@@ -183,7 +183,7 @@ def main():
                     sync_list.extend(
                         create_sync_array(
                             datasets=[i],
-                            sync_status="fetch_failed_updated_dataset",
+                            sync_status="fetch_failed_update",
                             publisher=publisher,
                         )
                     )
