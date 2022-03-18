@@ -38,12 +38,11 @@ CUSTODIAN_NAME = args["publisher"]
 
 def main():
     try:
-        sync_list = []
         logger = initialise_logging(LOG_NAME)
         db = initialise_db(MONGO_URI)
 
         ##########################################
-        # GET Publisher Details
+        # GET publisher details
         ##########################################
 
         publisher = get_publisher(db=db, publisher_name=CUSTODIAN_NAME)
@@ -58,7 +57,7 @@ def main():
         )
 
         ##########################################
-        # GET Datasets from Custodian and Gateway
+        # GET datasets from custodian and gateway
         ##########################################
 
         auth_token = ""
@@ -109,6 +108,7 @@ def main():
 
         invalid_datasets = []
         valid_datasets = []
+        sync_list = []
 
         for i in new_datasets:
             try:
@@ -258,8 +258,8 @@ def main():
             )
 
     except Exception as e:
-        print(e)
         # Critical error raised, log error, send an error email and exit the script
+        print("ERROR:", e)
         logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
         send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
         sys.exit(1)
