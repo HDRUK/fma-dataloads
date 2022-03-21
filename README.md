@@ -1,6 +1,6 @@
 ## Federated Metadata Automation
 
-A Python 3.8 ETL script written as a Google Cloud Function Python ETL script for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
+A Python 3.8 ETL script written as a Google Cloud Function (scheduler > pub/sub > function) for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
 
 ### Setup
 
