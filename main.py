@@ -29,9 +29,8 @@ def ingest(event, _):
         _ context: Event metadata (not used here)
     """
     try:
-        sync_list = []
-        db = initialise_db(MONGO_URI)
         logger = initialise_logging(LOG_NAME)
+        db = initialise_db(MONGO_URI)
 
         custodian_name = base64.b64decode(event["data"]).decode("utf-8")
 
@@ -42,7 +41,7 @@ def ingest(event, _):
         publisher = get_publisher(db=db, publisher_name=custodian_name)
 
         if publisher["federation"]["active"] != True:
-            raise ValueError(
+            raise CriticalError(
                 f"Federation is deactivated for custodian {custodian_name}"
             )
 
@@ -100,6 +99,7 @@ def ingest(event, _):
 
         new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
+        sync_list = []
         invalid_datasets = []
         valid_datasets = []
 
@@ -250,11 +250,16 @@ def ingest(event, _):
                 failed_validation=invalid_datasets,
             )
 
-    except Exception as e:
-        print(e)
+    except CriticalError as e:
         # Critical error raised, log error, send an error email and exit the script
+        print(e)
         logger.log_struct({"error": str(e), "source": custodian_name}, severity="ERROR")
         send_error_mail(publisher_name=custodian_name, error=str(e))
+        sys.exit(1)
+
+    except Exception as e:
+        # Unknown exception raised, print error and exit the program
+        print(e)
         sys.exit(1)
 
 
@@ -263,8 +268,7 @@ def initialise_logging(log_name):
         client = logging.Client()
         logger = client.logger(log_name)
         return logger
-    except Exception as e:
-        print("Error instantiating logger: ", e)
+    except Exception:
         raise
 
 
@@ -273,5 +277,4 @@ def initialise_db(mongo_uri):
         db = MongoClient(mongo_uri)[os.getenv("DATABASE_DATABASE")]
         return db
     except Exception as e:
-        print("Error connecting to database: ", e)
-        raise
+        raise CriticalError(f"Error connecting to database: {e}")

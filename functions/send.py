@@ -4,6 +4,8 @@ import datetime
 
 from sendgrid.helpers.mail import *
 
+from functions.exceptions import CriticalError
+
 
 def send_summary_mail(
     publisher={}, archived_datasets=[], new_datasets=[], failed_validation=[]
@@ -58,5 +60,4 @@ def _send_mail(
     try:
         sg.client.mail.send.post(request_body=mail.get())
     except Exception as e:
-        print("Error sending email: ", e)
-        raise
+        print(f"Error sending emails: {e}")

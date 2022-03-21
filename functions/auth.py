@@ -4,6 +4,8 @@ import requests
 from requests import RequestException
 from google.cloud import secretmanager
 
+from .exceptions import CriticalError
+
 
 def get_access_token(token_url="", client_id="", client_secret=""):
     """
@@ -25,8 +27,7 @@ def get_access_token(token_url="", client_id="", client_secret=""):
             raise RequestException("An invalid status code was received")
 
     except Exception as e:
-        print("Error retrieving access token: ", e)
-        raise
+        raise CriticalError(f"Error retrieving access token: {e}")
 
 
 def get_client_secret(secret_name=""):
@@ -41,5 +42,4 @@ def get_client_secret(secret_name=""):
         return json.loads(response.payload.data.decode("utf8").replace("'", '"'))
 
     except Exception as e:
-        print("Error retrieving secrets from GCP: ", e)
-        raise
+        raise CriticalError(f"Error retrieving secrets from GCP: {e}")

@@ -1,7 +1,8 @@
-import sys
 import requests
 
 from requests import RequestException
+
+from .exceptions import CriticalError
 
 
 def get_datasets(url="", auth_token=""):
@@ -23,8 +24,7 @@ def get_datasets(url="", auth_token=""):
             )
 
     except Exception as e:
-        print("Error retrieving list of datasets: ", e)
-        raise
+        raise CriticalError(f"Error extracting list of datasets from {url}: {e}")
 
 
 def get_dataset(url="", auth_token="", dataset_id=""):

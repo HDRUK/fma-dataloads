@@ -3,6 +3,8 @@ import requests
 from requests import RequestException
 from jsonschema import Draft7Validator
 
+from functions.exceptions import CriticalError
+
 
 def validate_json(schema_url, dataset):
     """
@@ -27,5 +29,4 @@ def validate_json(schema_url, dataset):
 
         return
     except RequestException as e:
-        print("Error retrieving datasetv2 validation schema: ", e)
-        raise
+        raise CriticalError(f"Error retrieving the datasetv2 validation schema: {e}")

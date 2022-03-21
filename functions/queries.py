@@ -1,4 +1,4 @@
-import sys
+from .exceptions import CriticalError
 
 
 def get_gateway_datasets(db, publisher):
@@ -12,8 +12,9 @@ def get_gateway_datasets(db, publisher):
 
         return datasets
     except Exception as e:
-        print("Error retrieving gateway datasets: ", e)
-        raise
+        raise CriticalError(
+            f"Error retrieving gateway datasets for publisher {publisher}: {e}"
+        )
 
 
 def get_latest_gateway_dataset(db, pid=""):
@@ -29,7 +30,9 @@ def get_latest_gateway_dataset(db, pid=""):
             f"Error retrieving latest version of dataset ({pid}) from the Gateway: ",
             e,
         )
-        raise
+        raise CriticalError(
+            f"Error retrieving latest version of dataset {pid} from the Gateway: {e}"
+        )
 
 
 def archive_gateway_datasets(db, archived_datasets=[]):
@@ -42,8 +45,7 @@ def archive_gateway_datasets(db, archived_datasets=[]):
             {"$set": {"activeflag": "archive"}},
         )
     except Exception as e:
-        print("Error archiving datasets on the Gateway: ", e)
-        raise
+        raise CriticalError(f"Error archiving datasets on the Gateway: {e}")
 
 
 def add_new_datasets(db, new_datasets=[]):
@@ -53,8 +55,9 @@ def add_new_datasets(db, new_datasets=[]):
     try:
         db.tools.insert_many(new_datasets)
     except Exception as e:
-        print("Error inserting new datasets in tools collection: ", e)
-        raise
+        raise CriticalError(
+            f"Error inserting list of new datasets into the Gateway: {e}"
+        )
 
 
 def get_publisher(db, publisher_name):
@@ -64,11 +67,9 @@ def get_publisher(db, publisher_name):
     try:
         return db.publishers.find_one({"publisherDetails.name": publisher_name})
     except Exception as e:
-        print(
-            "Error retrieving publisher details from the publisher collection: ",
-            e,
+        raise CriticalError(
+            f"Error retrieving the publisher details from the publisher collection for publisher name {publisher_name}: {e}"
         )
-        raise
 
 
 def sync_datasets(db, sync_list=[]):
@@ -79,5 +80,4 @@ def sync_datasets(db, sync_list=[]):
         db.sync.delete_many({"pid": {"$in": list(map(lambda x: x["pid"], sync_list))}})
         db.sync.insert_many(sync_list)
     except Exception as e:
-        print("Error updating the sync collection: ", e)
-        raise
+        raise CriticalError(f"Error updating the sync collection on the Gateway: {e}")

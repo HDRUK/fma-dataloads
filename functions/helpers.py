@@ -4,6 +4,8 @@ import numpy as np
 
 from datetime import datetime
 
+from .exceptions import CriticalError
+
 
 def datasets_to_archive(custodian_datasets, gateway_datasets):
     """
@@ -118,11 +120,9 @@ def transform_dataset(dataset={}, previous_version={}):
         return formatted_dataset
 
     except KeyError as e:
-        print("Key error when transforming the datasets: ", e)
-        raise
+        raise CriticalError(f"Key error when tranforming dataset: {e}")
     except Exception as e:
-        print("Error transoforming the datasets: ", e)
-        raise
+        raise CriticalError(f"Unknown error when tranforming dataset: {e}")
 
 
 def create_sync_array(datasets=[], sync_status="ok", publisher={}):
