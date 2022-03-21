@@ -213,9 +213,7 @@ def ingest(event, _):
                         )
                     )
 
-                    if latest_dataset["activeflag"] in ["active", "inReview"]:
-                        # Only archive previously active or inReview datasets, keep rejected datasets as rejected
-                        archived_datasets.append(i)
+                    archived_datasets.append(i)
 
         ##########################################
         # Database operations
