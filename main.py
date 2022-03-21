@@ -163,7 +163,7 @@ def ingest(event, _):
                     # No version change - move to next dataset
                     continue
 
-                if i["status"] != "ok" and time_elapsed < 5:
+                if i["status"] != "ok" and time_elapsed < 60 * 60 * 24 * 7:
                     # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
