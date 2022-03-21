@@ -90,12 +90,14 @@ def ingest(event, _):
         ##########################################
         # ARCHIVE logic
         ##########################################
+        # PID no longer exists in custodian list
 
         archived_datasets = datasets_to_archive(custodian_datasets, gateway_datasets)
 
         ##########################################
         # ADDITION logic
         ##########################################
+        # PID is completely new to Gateway
 
         new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
@@ -110,11 +112,14 @@ def ingest(event, _):
                 )
             except RequestException as e:
                 # Fetching single dataset failed - update sync status
-                print(f'Error retrieving new dataset {i["identifier"]}:', e)
+                logger.log_text(
+                    f'Error retrieving new dataset {i["identifier"]}: {e}',
+                    severity="INFO",
+                )
                 sync_list.extend(
                     create_sync_array(
                         datasets=[i],
-                        sync_status="fetch_failed_new",
+                        sync_status="fetch_failed",
                         publisher=publisher,
                     )
                 )
@@ -133,9 +138,9 @@ def ingest(event, _):
         ##########################################
         # UPDATE logic
         ##########################################
+        # PID already exists in sync collection
 
         if len(gateway_datasets) > 0:
-
             (
                 custodian_versions,
                 gateway_versions,
@@ -157,7 +162,7 @@ def ingest(event, _):
                     # No version change - move to next dataset
                     continue
 
-                if i["status"] != "ok" and time_elapsed < 60 * 60 * 24 * 7:
+                if i["status"] != "ok" and time_elapsed < 5:
                     # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
@@ -176,7 +181,7 @@ def ingest(event, _):
                     sync_list.extend(
                         create_sync_array(
                             datasets=[i],
-                            sync_status="fetch_failed_update",
+                            sync_status="fetch_failed",
                             publisher=publisher,
                         )
                     )
@@ -196,12 +201,18 @@ def ingest(event, _):
                 else:
                     latest_dataset = get_latest_gateway_dataset(db=db, pid=i["pid"])
 
+                    if not latest_dataset:
+                        # New dataset not in tools, exists in sync, but previously fetch_failed or validation_failed
+                        valid_datasets.append(transform_dataset(dataset=new_datasetv2))
+                        continue
+
                     valid_datasets.append(
                         transform_dataset(
                             dataset=new_datasetv2, previous_version=latest_dataset
                         )
                     )
-                    if latest_dataset["datasetVersion"] in ["active", "inReview"]:
+
+                    if latest_dataset["activeflag"] in ["active", "inReview"]:
                         # Only archive previously active or inReview datasets, keep rejected datasets as rejected
                         archived_datasets.append(i)
 

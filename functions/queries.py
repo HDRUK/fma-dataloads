@@ -7,7 +7,7 @@ def get_gateway_datasets(db, publisher):
     """
     try:
         datasets = db.sync.find(
-            {"publisherName": publisher, "status": {"$ne": "fetch_failed_new"}},
+            {"publisherName": publisher},
         )
 
         return datasets
@@ -25,11 +25,10 @@ def get_latest_gateway_dataset(db, pid=""):
         datasets = db.tools.find({"type": "dataset", "pid": pid}).sort("createdAt", -1)
 
         return datasets[0]
+    except IndexError:
+        return None
     except Exception as e:
-        print(
-            f"Error retrieving latest version of dataset ({pid}) from the Gateway: ",
-            e,
-        )
+        print(e.__class__.__name__)
         raise CriticalError(
             f"Error retrieving latest version of dataset {pid} from the Gateway: {e}"
         )

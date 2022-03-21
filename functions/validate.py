@@ -25,7 +25,8 @@ def validate_json(schema_url, dataset):
             error_details = []
             for error in errors:
                 error_details.append({"error": error.message, "path": list(error.path)})
-            return {"dataset": dataset, "errors": error_details}
+            dataset["validation_errors"] = error_details
+            return dataset
 
         return
     except RequestException as e:

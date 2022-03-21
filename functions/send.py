@@ -4,8 +4,6 @@ import datetime
 
 from sendgrid.helpers.mail import *
 
-from functions.exceptions import CriticalError
-
 
 def send_summary_mail(
     publisher={}, archived_datasets=[], new_datasets=[], failed_validation=[]
@@ -31,7 +29,7 @@ def send_summary_mail(
     if len(failed_validation) > 0:
         message += "<br><b>The following datasets have failed validation:</b><br /><br>"
         for i in failed_validation:
-            message += f"<b>Dataset ID: </b>{i['dataset']['identifier']} (v {i['dataset']['version']})<br>"
+            message += f"<b>Dataset ID: </b>{i['identifier']} (v {i['version']})<br>"
 
     _send_mail(
         message=message,
