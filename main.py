@@ -1,6 +1,6 @@
 import os
 import sys
-import argparse
+import base64
 
 from datetime import datetime
 from dotenv import load_dotenv
@@ -9,20 +9,7 @@ from google.cloud import logging
 
 from functions import *
 
-
-parser = argparse.ArgumentParser(
-    description="Federated Metadata Automation ingestion script."
-)
-
-parser.add_argument(
-    "--publisher",
-    type=str,
-    help="The name of publisher/custodian matching the name saved in the HDRUK Gateway publisher collection (publisherDetails.name)",
-    required=True,
-)
-
-args = vars(parser.parse_args())
-
+load_dotenv()
 
 LOG_NAME = os.getenv("LOGGING_LOG_NAME")
 MONGO_URI = (
@@ -33,28 +20,34 @@ MONGO_URI = (
     f'{os.getenv("DATABASE_PORT")}/'
     f'{os.getenv("DATABASE_DATABASE")}'
 )
-CUSTODIAN_NAME = args["publisher"]
 
 
-def main():
+def ingest(event, _):
+    """Triggered by a Pub/Sub topic on GCP
+    Args:
+        event (dict): Event payload inc. publisher name (ex. { "data": "SAIL" })
+        _ context: Event metadata (not used here)
+    """
     try:
         sync_list = []
-        logger = initialise_logging(LOG_NAME)
         db = initialise_db(MONGO_URI)
+        logger = initialise_logging(LOG_NAME)
+
+        custodian_name = base64.b64decode(event["data"]).decode("utf-8")
 
         ##########################################
         # GET Publisher Details
         ##########################################
 
-        publisher = get_publisher(db=db, publisher_name=CUSTODIAN_NAME)
+        publisher = get_publisher(db=db, publisher_name=custodian_name)
 
         if publisher["federation"]["active"] != True:
             raise ValueError(
-                f"Federation is deactivated for custodian {CUSTODIAN_NAME}"
+                f"Federation is deactivated for custodian {custodian_name}"
             )
 
         logger.log_text(
-            f"Initiating FMA ingestion for {CUSTODIAN_NAME}", severity="INFO"
+            f"Initiating FMA ingestion for {custodian_name}", severity="INFO"
         )
 
         ##########################################
@@ -260,8 +253,8 @@ def main():
     except Exception as e:
         print(e)
         # Critical error raised, log error, send an error email and exit the script
-        logger.log_struct({"error": str(e), "source": CUSTODIAN_NAME}, severity="ERROR")
-        send_error_mail(publisher_name=CUSTODIAN_NAME, error=str(e))
+        logger.log_struct({"error": str(e), "source": custodian_name}, severity="ERROR")
+        send_error_mail(publisher_name=custodian_name, error=str(e))
         sys.exit(1)
 
 
@@ -282,9 +275,3 @@ def initialise_db(mongo_uri):
     except Exception as e:
         print("Error connecting to database: ", e)
         raise
-
-
-if __name__ == "__main__":
-    print("\x1B[2J\x1B[0f")
-    load_dotenv()
-    main()
