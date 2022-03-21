@@ -45,15 +45,13 @@ def send_error_mail(publisher_name="", error=""):
     _send_mail(message=message, subject=subject, email_to=os.getenv("EMAIL_ADMIN"))
 
 
-def _send_mail(
-    message="", subject="", email_to="", email_from=os.getenv("EMAIL_SENDER")
-):
+def _send_mail(message="", subject="", email_to=""):
     """
     INTERNAL: send a message to a given address.
     """
     sg = sendgrid.SendGridAPIClient(api_key=os.environ.get("SENDGRID_API_KEY"))
     content = Content("text/html", message)
-    mail = Mail(Email(email_from), To(email_to), subject, content)
+    mail = Mail(Email(os.getenv("EMAIL_SENDER")), To(email_to), subject, content)
 
     try:
         sg.client.mail.send.post(request_body=mail.get())

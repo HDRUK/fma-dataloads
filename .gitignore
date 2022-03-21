@@ -1,9 +1,10 @@
 .env
+/env
 
-schema.json
 dev.py
-v2datasets.json
-validation_dataset.json
+*.json
 
 .pytest_cache
 .vscode
+
+__pycache__

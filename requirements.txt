@@ -1,0 +1,10 @@
+pytest==7.1.0
+python-dotenv==0.19.2
+requests==2.27.1
+sendgrid==6.9.7
+black==22.1.0
+google-cloud-logging==3.0.0
+google-cloud-secret-manager==2.9.2
+numpy==1.22.3
+pymongo==4.0.2
+jsonschema==4.4.0
