@@ -29,8 +29,8 @@ def ingest(event, _):
         _ context: Event metadata (not used here)
     """
     try:
-        logger = initialise_logging(LOG_NAME)
         db = initialise_db(MONGO_URI)
+        logger = logging.Client().logger(LOG_NAME)
 
         custodian_name = base64.b64decode(event["data"]).decode("utf-8")
 
@@ -252,7 +252,10 @@ def ingest(event, _):
 
     except CriticalError as e:
         # Critical error raised, log error, send an error email and exit the script
-        print(e)
+        if os.getenv("ENVIRONMENT") == "dev":
+            # Only print errors to stdout in development
+            print(e)
+
         logger.log_struct({"error": str(e), "source": custodian_name}, severity="ERROR")
         send_error_mail(publisher_name=custodian_name, error=str(e))
         sys.exit(1)
@@ -261,15 +264,6 @@ def ingest(event, _):
         # Unknown exception raised, print error and exit the program
         print(e)
         sys.exit(1)
-
-
-def initialise_logging(log_name):
-    try:
-        client = logging.Client()
-        logger = client.logger(log_name)
-        return logger
-    except Exception:
-        raise
 
 
 def initialise_db(mongo_uri):
