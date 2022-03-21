@@ -35,7 +35,7 @@ def ingest(event, _):
         custodian_name = base64.b64decode(event["data"]).decode("utf-8")
 
         ##########################################
-        # GET Publisher Details
+        # GET publisher details
         ##########################################
 
         publisher = get_publisher(db=db, publisher_name=custodian_name)
@@ -50,7 +50,7 @@ def ingest(event, _):
         )
 
         ##########################################
-        # GET Datasets from Custodian and Gateway
+        # GET datasets from custodian and gateway
         ##########################################
 
         auth_token = ""
@@ -104,6 +104,7 @@ def ingest(event, _):
         sync_list = []
         invalid_datasets = []
         valid_datasets = []
+        sync_list = []
 
         for i in new_datasets:
             try:

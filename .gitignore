@@ -6,3 +6,4 @@ v2datasets.json
 validation_dataset.json
 
 .pytest_cache
+.vscode
