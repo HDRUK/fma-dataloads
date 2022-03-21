@@ -7,7 +7,7 @@ def get_gateway_datasets(db, publisher):
     """
     try:
         datasets = db.sync.find(
-            {"publisherName": publisher, "status": {"$ne": "fetch_failed_new_dataset"}},
+            {"publisherName": publisher, "status": {"$ne": "fetch_failed_new"}},
         )
 
         return datasets
