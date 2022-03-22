@@ -1,3 +1,4 @@
+import re
 import requests
 
 from requests import RequestException
@@ -31,3 +32,11 @@ def validate_json(schema_url, dataset):
         return
     except RequestException as e:
         raise CriticalError(f"Error retrieving the datasetv2 validation schema: {e}")
+
+
+def verify_schema_version(schema_url):
+    """
+    Verify that the supplied schema is either 2.0.0, 2.0.2 or latest.
+    """
+    allowed_versions = ["2.0.0", "2.0.2", "latest"]
+    return bool(re.search("|".join(allowed_versions), schema_url))

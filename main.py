@@ -126,12 +126,23 @@ def ingest(event, _):
                 )
                 continue
 
-            validation_schema = i["@schema"] if "@schema" in i else ""
+            schema_url = i["@schema"] if "@schema" in i else ""
 
-            if not validation_schema:
-                validation_schema = os.getenv("DEFAULT_SCHEMA_URL")
+            if not verify_schema_version(schema_url):
+                logger.log_text(
+                    f'Schema not supported for dataset {i["identifier"]}',
+                    severity="INFO",
+                )
+                sync_list.extend(
+                    create_sync_array(
+                        datasets=[i],
+                        sync_status="unsupported_version",
+                        publisher=publisher,
+                    )
+                )
+                continue
 
-            if not_valid := validate_json(validation_schema, dataset):
+            if not_valid := validate_json(schema_url, dataset):
                 invalid_datasets.append(not_valid)
             else:
                 valid_datasets.append(transform_dataset(dataset=dataset))
@@ -175,9 +186,9 @@ def ingest(event, _):
                     )
                 except RequestException as e:
                     # Fetching single dataset failed - update sync status
-                    print(
-                        f'Error retrieving new dataset {custodian_version["identifier"]}:',
-                        e,
+                    logger.log_text(
+                        f'Schema not supported for dataset {i["identifier"]}',
+                        severity="INFO",
                     )
                     sync_list.extend(
                         create_sync_array(
@@ -188,14 +199,21 @@ def ingest(event, _):
                     )
                     continue
 
-                validation_schema = (
-                    custodian_version["@schema"]
-                    if "@schema" in custodian_version
-                    else ""
-                )
+                validation_schema = custodian_version["@schema"]
 
-                if not validation_schema:
-                    validation_schema = os.getenv("DEFAULT_SCHEMA_URL")
+                if not verify_schema_version(schema_url):
+                    logger.log_text(
+                        f'Schema not supported for dataset {i["identifier"]}',
+                        severity="INFO",
+                    )
+                    sync_list.extend(
+                        create_sync_array(
+                            datasets=[i],
+                            sync_status="unsupported_version",
+                            publisher=publisher,
+                        )
+                    )
+                    continue
 
                 if not_valid := validate_json(validation_schema, new_datasetv2):
                     invalid_datasets.append(not_valid)
