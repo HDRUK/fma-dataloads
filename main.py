@@ -104,7 +104,6 @@ def ingest(event, _):
         sync_list = []
         invalid_datasets = []
         valid_datasets = []
-        sync_list = []
 
         for i in new_datasets:
             try:
