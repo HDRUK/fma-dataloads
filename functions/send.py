@@ -6,7 +6,12 @@ from sendgrid.helpers.mail import *
 
 
 def send_summary_mail(
-    publisher={}, archived_datasets=[], new_datasets=[], failed_validation=[]
+    publisher={},
+    archived_datasets=[],
+    new_datasets=[],
+    failed_validation=[],
+    fetch_failed_datasets=[],
+    unsupported_version_datasets=[],
 ):
     """
     Send a formatted email to the relevant parties.
@@ -29,6 +34,16 @@ def send_summary_mail(
     if len(failed_validation) > 0:
         message += "<br><b>The following datasets have failed validation:</b><br /><br>"
         for i in failed_validation:
+            message += f"<b>Dataset ID: </b>{i['identifier']} (v {i['version']})<br>"
+
+    if len(fetch_failed_datasets) > 0:
+        message += "<br><b>The script failed to retrieve the datasetv2 metadata for the following datasets:</b><br /><br>"
+        for i in fetch_failed_datasets:
+            message += f"<b>Dataset ID: </b>{i['identifier']} (v {i['version']})<br>"
+
+    if len(unsupported_version_datasets) > 0:
+        message += "<br><b>The following datasets had a schema version which is not supported:</b><br /><br>"
+        for i in unsupported_version_datasets:
             message += f"<b>Dataset ID: </b>{i['identifier']} (v {i['version']})<br>"
 
     _send_mail(

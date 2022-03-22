@@ -104,11 +104,13 @@ def ingest(event, _):
         sync_list = []
         invalid_datasets = []
         valid_datasets = []
+        fetch_failed_datasets = []
+        unsupported_version_datasets = []
 
         for i in new_datasets:
             try:
                 dataset = get_dataset(
-                    custodian_datasets_url, auth_token, i["identifier"]
+                    custodian_datasets_url, auth_token, i["identifier"] + "iii"
                 )
             except RequestException as e:
                 # Fetching single dataset failed - update sync status
@@ -123,6 +125,7 @@ def ingest(event, _):
                         publisher=publisher,
                     )
                 )
+                fetch_failed_datasets.append(i)
                 continue
 
             schema_url = i["@schema"] if "@schema" in i else ""
@@ -139,6 +142,7 @@ def ingest(event, _):
                         publisher=publisher,
                     )
                 )
+                unsupported_version_datasets.append(i)
                 continue
 
             if not_valid := validate_json(schema_url, dataset):
@@ -196,6 +200,7 @@ def ingest(event, _):
                             publisher=publisher,
                         )
                     )
+                    fetch_failed_datasets.append(i)
                     continue
 
                 validation_schema = custodian_version["@schema"]
@@ -212,6 +217,7 @@ def ingest(event, _):
                             publisher=publisher,
                         )
                     )
+                    unsupported_version_datasets.append(i)
                     continue
 
                 if not_valid := validate_json(validation_schema, new_datasetv2):
@@ -269,12 +275,16 @@ def ingest(event, _):
             len(archived_datasets) > 0
             or len(valid_datasets) > 0
             or len(invalid_datasets) > 0
+            or len(fetch_failed_datasets) > 0
+            or len(unsupported_version_datasets) > 0
         ):
             send_summary_mail(
                 publisher=publisher,
                 archived_datasets=archived_datasets,
                 new_datasets=valid_datasets,
                 failed_validation=invalid_datasets,
+                fetch_failed_datasets=fetch_failed_datasets,
+                unsupported_version_datasets=unsupported_version_datasets,
             )
 
     except CriticalError as e:
