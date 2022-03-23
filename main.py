@@ -23,10 +23,11 @@ MONGO_URI = (
 
 
 def ingest(event, _):
-    """Triggered by a Pub/Sub topic on GCP
+    """
+    ENTRYPOINT: triggered by a Pub/Sub topic on GCP.
     Args:
-        event (dict): Event payload inc. publisher name (ex. { "data": "SAIL" })
-        _ context: Event metadata (not used here)
+        event (dict): Event payload inc. base64 encoded publisher name (ex. { "data": "U0FJTA==" })
+        _ a.k.a context: Event metadata (not used here)
     """
     try:
         db = initialise_db(MONGO_URI)
