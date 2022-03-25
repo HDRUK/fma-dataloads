@@ -159,145 +159,145 @@ def _generate_question_answers(dataset):
     question_answers = {}
 
     # Summary
-    if _keys_exists(dataset, "summary", "title"):
+    if _keys_exist(dataset, "summary", "title"):
         question_answers["properties/summary/title"] = dataset["summary"]["title"]
-    if _keys_exists(dataset, "summary", "abstract"):
+    if _keys_exist(dataset, "summary", "abstract"):
         question_answers["properties/summary/abstract"] = dataset["summary"]["abstract"]
-    if _keys_exists(dataset, "summary", "contactPoint"):
+    if _keys_exist(dataset, "summary", "contactPoint"):
         question_answers["properties/summary/contactPoint"] = dataset["summary"][
             "contactPoint"
         ]
-    if _keys_exists(dataset, "summary", "keywords"):
+    if _keys_exist(dataset, "summary", "keywords"):
         question_answers["properties/summary/keywords"] = dataset["summary"]["keywords"]
-    if _keys_exists(dataset, "summary", "alternateIdentifiers"):
+    if _keys_exist(dataset, "summary", "alternateIdentifiers"):
         question_answers["properties/summary/alternateIdentifiers"] = dataset[
             "summary"
         ]["alternateIdentifiers"]
-    if _keys_exists(dataset, "summary", "doiName"):
+    if _keys_exist(dataset, "summary", "doiName"):
         question_answers["properties/summary/doiName"] = dataset["summary"]["doiName"]
 
     # Documentation
-    if _keys_exists(dataset, "documentation", "description"):
+    if _keys_exist(dataset, "documentation", "description"):
         question_answers["properties/documentation/description"] = dataset[
             "documentation"
         ]["description"]
-    if _keys_exists(dataset, "documentation", "associatedMedia"):
+    if _keys_exist(dataset, "documentation", "associatedMedia"):
         question_answers["properties/documentation/associatedMedia"] = dataset[
             "documentation"
         ]["associatedMedia"]
-    if _keys_exists(dataset, "documentation", "isPartOf"):
+    if _keys_exist(dataset, "documentation", "isPartOf"):
         question_answers["properties/documentation/isPartOf"] = dataset[
             "documentation"
         ]["isPartOf"]
 
     # Coverage
-    if _keys_exists(dataset, "coverage", "spatial"):
+    if _keys_exist(dataset, "coverage", "spatial"):
         question_answers["properties/coverage/spatial"] = dataset["coverage"]["spatial"]
-    if _keys_exists(dataset, "coverage", "typicalAgeRange"):
+    if _keys_exist(dataset, "coverage", "typicalAgeRange"):
         question_answers["properties/coverage/typicalAgeRange"] = dataset["coverage"][
             "typicalAgeRange"
         ]
-    if _keys_exists(dataset, "coverage", "physicalSampleAvailability"):
+    if _keys_exist(dataset, "coverage", "physicalSampleAvailability"):
         question_answers["properties/coverage/physicalSampleAvailability"] = dataset[
             "coverage"
         ]["physicalSampleAvailability"]
-    if _keys_exists(dataset, "coverage", "followup"):
+    if _keys_exist(dataset, "coverage", "followup"):
         question_answers["properties/coverage/followup"] = dataset["coverage"][
             "followup"
         ]
-    if _keys_exists(dataset, "coverage", "pathway"):
+    if _keys_exist(dataset, "coverage", "pathway"):
         question_answers["properties/coverage/pathway"] = dataset["coverage"]["pathway"]
 
     # Provenance - origin
-    if _keys_exists(dataset, "provenance", "origin", "purpose"):
+    if _keys_exist(dataset, "provenance", "origin", "purpose"):
         question_answers["properties/provenance/origin/purpose"] = dataset[
             "provenance"
         ]["origin"]["purpose"]
-    if _keys_exists(dataset, "provenance", "origin", "source"):
+    if _keys_exist(dataset, "provenance", "origin", "source"):
         question_answers["properties/provenance/origin/source"] = dataset["provenance"][
             "origin"
         ]["source"]
-    if _keys_exists(dataset, "provenance", "origin", "collectionSituation"):
+    if _keys_exist(dataset, "provenance", "origin", "collectionSituation"):
         question_answers["properties/provenance/origin/collectionSituation"] = dataset[
             "provenance"
         ]["origin"]["collectionSituation"]
 
     # Provenance - temporal
-    if _keys_exists(dataset, "provenance", "temporal", "accrualPeriodicity"):
+    if _keys_exist(dataset, "provenance", "temporal", "accrualPeriodicity"):
         question_answers["properties/provenance/temporal/accrualPeriodicity"] = dataset[
             "provenance"
         ]["temporal"]["accrualPeriodicity"]
-    if _keys_exists(dataset, "provenance", "temporal", "distributionReleaseDate"):
+    if _keys_exist(dataset, "provenance", "temporal", "distributionReleaseDate"):
         question_answers[
             "properties/provenance/temporal/distributionReleaseDate"
         ] = dataset["provenance"]["temporal"]["distributionReleaseDate"]
-    if _keys_exists(dataset, "provenance", "temporal", "startDate"):
+    if _keys_exist(dataset, "provenance", "temporal", "startDate"):
         question_answers["properties/provenance/temporal/startDate"] = dataset[
             "provenance"
         ]["temporal"]["startDate"]
-    if _keys_exists(dataset, "provenance", "temporal", "endDate"):
+    if _keys_exist(dataset, "provenance", "temporal", "endDate"):
         question_answers["properties/provenance/temporal/endDate"] = dataset[
             "provenance"
         ]["temporal"]["endDate"]
-    if _keys_exists(dataset, "provenance", "temporal", "timeLag"):
+    if _keys_exist(dataset, "provenance", "temporal", "timeLag"):
         question_answers["properties/provenance/temporal/timeLag"] = dataset[
             "provenance"
         ]["temporal"]["timeLag"]
 
     # Accessibility - usage
-    if _keys_exists(dataset, "accessibility", "usage", "dataUseLimitation"):
+    if _keys_exist(dataset, "accessibility", "usage", "dataUseLimitation"):
         question_answers["properties/accessibility/usage/dataUseLimitation"] = dataset[
             "accessibility"
         ]["usage"]["dataUseLimitation"]
-    if _keys_exists(dataset, "accessibility", "usage", "dataUseRequirements"):
+    if _keys_exist(dataset, "accessibility", "usage", "dataUseRequirements"):
         question_answers[
             "properties/accessibility/usage/dataUseRequirements"
         ] = dataset["accessibility"]["usage"]["dataUseRequirements"]
-    if _keys_exists(dataset, "accessibility", "usage", "resourceCreator"):
+    if _keys_exist(dataset, "accessibility", "usage", "resourceCreator"):
         question_answers["properties/accessibility/usage/resourceCreator"] = dataset[
             "accessibility"
         ]["usage"]["resourceCreator"]
-    if _keys_exists(dataset, "accessibility", "usage", "investigations"):
+    if _keys_exist(dataset, "accessibility", "usage", "investigations"):
         question_answers["properties/accessibility/usage/investigations"] = dataset[
             "accessibility"
         ]["usage"]["investigations"]
-    if _keys_exists(dataset, "accessibility", "usage", "isReferencedBy"):
+    if _keys_exist(dataset, "accessibility", "usage", "isReferencedBy"):
         question_answers["properties/accessibility/usage/isReferencedBy"] = dataset[
             "accessibility"
         ]["usage"]["isReferencedBy"]
 
     # Accessibility - access
-    if _keys_exists(dataset, "accessibility", "access", "accessRights"):
+    if _keys_exist(dataset, "accessibility", "access", "accessRights"):
         question_answers["properties/accessibility/access/accessRights"] = dataset[
             "accessibility"
         ]["access"]["accessRights"]
-    if _keys_exists(dataset, "accessibility", "access", "accessService"):
+    if _keys_exist(dataset, "accessibility", "access", "accessService"):
         question_answers["properties/accessibility/access/accessService"] = dataset[
             "accessibility"
         ]["access"]["accessService"]
-    if _keys_exists(dataset, "accessibility", "access", "accessRequestCost"):
+    if _keys_exist(dataset, "accessibility", "access", "accessRequestCost"):
         question_answers["properties/accessibility/access/accessRequestCost"] = dataset[
             "accessibility"
         ]["access"]["accessRequestCost"]
-    if _keys_exists(dataset, "accessibility", "access", "deliveryLeadTime"):
+    if _keys_exist(dataset, "accessibility", "access", "deliveryLeadTime"):
         question_answers["properties/accessibility/access/deliveryLeadTime"] = dataset[
             "accessibility"
         ]["access"]["deliveryLeadTime"]
-    if _keys_exists(dataset, "accessibility", "access", "jurisdiction"):
+    if _keys_exist(dataset, "accessibility", "access", "jurisdiction"):
         question_answers["properties/accessibility/access/jurisdiction"] = dataset[
             "accessibility"
         ]["access"]["jurisdiction"]
-    if _keys_exists(dataset, "accessibility", "access", "dataProcessor"):
+    if _keys_exist(dataset, "accessibility", "access", "dataProcessor"):
         question_answers["properties/accessibility/access/dataProcessor"] = dataset[
             "accessibility"
         ]["access"]["dataProcessor"]
-    if _keys_exists(dataset, "accessibility", "access", "dataController"):
+    if _keys_exist(dataset, "accessibility", "access", "dataController"):
         question_answers["properties/accessibility/access/dataController"] = dataset[
             "accessibility"
         ]["access"]["dataController"]
 
     # Accessibility - formats and standards
-    if _keys_exists(
+    if _keys_exist(
         dataset,
         "accessibility",
         "formatAndStandards",
@@ -306,54 +306,54 @@ def _generate_question_answers(dataset):
         question_answers[
             "properties/accessibility/formatAndStandards/vocabularyEncodingScheme"
         ] = dataset["accessibility"]["formatAndStandards"]["vocabularyEncodingScheme"]
-    if _keys_exists(dataset, "accessibility", "formatAndStandards", "conformsTo"):
+    if _keys_exist(dataset, "accessibility", "formatAndStandards", "conformsTo"):
         question_answers[
             "properties/accessibility/formatAndStandards/conformsTo"
         ] = dataset["accessibility"]["formatAndStandards"]["conformsTo"]
-    if _keys_exists(dataset, "accessibility", "formatAndStandards", "language"):
+    if _keys_exist(dataset, "accessibility", "formatAndStandards", "language"):
         question_answers[
             "properties/accessibility/formatAndStandards/language"
         ] = dataset["accessibility"]["formatAndStandards"]["language"]
-    if _keys_exists(dataset, "accessibility", "formatAndStandards", "format"):
+    if _keys_exist(dataset, "accessibility", "formatAndStandards", "format"):
         question_answers[
             "properties/accessibility/formatAndStandards/format"
         ] = dataset["accessibility"]["formatAndStandards"]["format"]
 
     # Enrichment and linkage
-    if _keys_exists(dataset, "enrichmentAndLinkages", "qualifiedRelation"):
+    if _keys_exist(dataset, "enrichmentAndLinkages", "qualifiedRelation"):
         question_answers["properties/enrichmentAndLinkage/qualifiedRelation"] = dataset[
             "enrichmentAndLinkage"
         ]["qualifiedRelation"]
-    if _keys_exists(dataset, "enrichmentAndLinkage", "derivation"):
+    if _keys_exist(dataset, "enrichmentAndLinkage", "derivation"):
         question_answers["properties/enrichmentAndLinkage/derivation"] = dataset[
             "enrichmentAndLinkage"
         ]["derivation"]
-    if _keys_exists(dataset, "enrichmentAndLinkage", "tools"):
+    if _keys_exist(dataset, "enrichmentAndLinkage", "tools"):
         question_answers["properties/enrichmentAndLinkage/tools"] = dataset[
             "enrichmentAndLinkage"
         ]["tools"]
 
     # Observations
-    if _keys_exists(dataset, "observations") and len(dataset["observations"]) > 0:
+    if _keys_exist(dataset, "observations") and len(dataset["observations"]) > 0:
         id = 0
         for i in dataset["observations"]:
-            if _keys_exists(i, "observedNode"):
+            if _keys_exist(i, "observedNode"):
                 question_answers["properties/observation/observedNode" + str(id)] = i[
                     "observedNode"
                 ]
-            if _keys_exists(i, "measuredValue"):
+            if _keys_exist(i, "measuredValue"):
                 question_answers["properties/observation/measuredValue" + str(id)] = i[
                     "measuredValue"
                 ]
-            if _keys_exists(i, "disambiguatingDescription"):
+            if _keys_exist(i, "disambiguatingDescription"):
                 question_answers[
                     "properties/observation/disambiguatingDescription" + str(id)
                 ] = i["disambiguatingDescription"]
-            if _keys_exists(i, "observationDate"):
+            if _keys_exist(i, "observationDate"):
                 question_answers[
                     "properties/observation/observationDate" + str(id)
                 ] = i["observationDate"]
-            if _keys_exists(i, "measuredProperty"):
+            if _keys_exist(i, "measuredProperty"):
                 question_answers[
                     "properties/observation/measuredProperty" + str(id)
                 ] = i["measuredProperty"]
@@ -362,7 +362,7 @@ def _generate_question_answers(dataset):
     return question_answers
 
 
-def _keys_exists(element, *keys):
+def _keys_exist(element, *keys):
     """
     INTERNAL: helper function to determine if a key exists in a dict.
     """
