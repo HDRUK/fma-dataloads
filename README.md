@@ -1,6 +1,6 @@
 ## Federated Metadata Automation
 
-A Python 3.8 ETL script written as a Google Cloud Function (scheduler > pub/sub > function) for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
+A Python 3.8 ETL script for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
 
 ### Setup
 
@@ -17,20 +17,21 @@ $ pip install -r requirements.txt
 
 ```
 // Gateway MongoDB database credentials
-DATABASE_USER=<<user>>
-DATABASE_PASSWORD=<<password>>
-DATABASE_DATABASE=<<database name>>
-DATABASE_HOST=<<host>>
-DATABASE_PORT=<<port>>
+MONGO_URI=<<base MongoDB URI>> ex. "mongodb+srv://user:pass@cluster" (do not include db name)
+MONGO_DATABASE=<<MongoDB database name>>
 
 // SendGrid and emails
 SENDGRID_API_KEY=<<SendGrid API key>>
 EMAIL_SENDER=<<email address to use as sender>>
 EMAIL_ADMIN=<<email address to send error notification to>>
 
-// Google logs
-LOGGING_LOG_NAME="cloudfunctions.googleapis.com%2Fcloud-functions" # another log name may be used for local development
+A path to authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS)
+```
 
-// Local development - prints errors to stdout
-ENVIRONMENT="dev"
+### Example
+
+The script can be triggered by passing a base64 encoded metadata publisher/custodian name in a dict to the main function in main.py.
+
+```
+python -c "from main import *; main({\"data\": \"<base64 encoded publisher name>\"})"
 ```
