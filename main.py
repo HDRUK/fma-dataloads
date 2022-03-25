@@ -1,39 +1,28 @@
 import os
 import sys
 import base64
+import logging
 
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from google.cloud import logging
 
 from functions import *
 
 load_dotenv()
 
-LOG_NAME = os.getenv("LOGGING_LOG_NAME")
-MONGO_URI = (
-    "mongodb://"
-    f'{os.getenv("DATABASE_USER")}:'
-    f'{os.getenv("DATABASE_PASSWORD")}@'
-    f'{os.getenv("DATABASE_HOST")}:'
-    f'{os.getenv("DATABASE_PORT")}/'
-    f'{os.getenv("DATABASE_DATABASE")}'
-)
 
-
-def ingest(event, _):
+def main(event):
     """
-    ENTRYPOINT: triggered by a Pub/Sub topic on GCP.
+    ENTRYPOINT: sync metadata from a given custodian.
     Args:
         event (dict): Event payload inc. base64 encoded publisher name (ex. { "data": "U0FJTA==" })
-        _ a.k.a context: Event metadata (not used here)
     """
     try:
-        db = initialise_db(MONGO_URI)
-        logger = logging.Client().logger(LOG_NAME)
-
         custodian_name = base64.b64decode(event["data"]).decode("utf-8")
+
+        logging.basicConfig(level=logging.INFO)
+        db = initialise_db(os.getenv("MONGO_URI"))
 
         ##########################################
         # GET publisher details
@@ -46,9 +35,7 @@ def ingest(event, _):
                 f"Federation is deactivated for custodian {custodian_name}"
             )
 
-        logger.log_text(
-            f"Initiating FMA ingestion for {custodian_name}", severity="INFO"
-        )
+        logging.info(f"Initiating FMA ingestion for {custodian_name}")
 
         ##########################################
         # GET datasets from custodian and gateway
@@ -111,14 +98,12 @@ def ingest(event, _):
         for i in new_datasets:
             try:
                 dataset = get_dataset(
-                    custodian_datasets_url, auth_token, i["identifier"] + "iii"
+                    custodian_datasets_url, auth_token, i["identifier"]
                 )
             except RequestException as e:
                 # Fetching single dataset failed - update sync status
-                logger.log_text(
-                    f'Error retrieving new dataset {i["identifier"]}: {e}',
-                    severity="INFO",
-                )
+                logging.error(f'Error retrieving new dataset {i["identifier"]}: {e}')
+
                 sync_list.extend(
                     create_sync_array(
                         datasets=[i],
@@ -129,13 +114,11 @@ def ingest(event, _):
                 fetch_failed_datasets.append(i)
                 continue
 
-            schema_url = i["@schema"] if "@schema" in i else ""
+            validation_schema = i["@schema"] if "@schema" in i else ""
 
-            if not verify_schema_version(schema_url):
-                logger.log_text(
-                    f'Schema not supported for dataset {i["identifier"]}',
-                    severity="INFO",
-                )
+            if not verify_schema_version(validation_schema):
+                logging.warning(f'Schema not supported for dataset {i["identifier"]}')
+
                 sync_list.extend(
                     create_sync_array(
                         datasets=[i],
@@ -146,7 +129,7 @@ def ingest(event, _):
                 unsupported_version_datasets.append(i)
                 continue
 
-            if not_valid := validate_json(schema_url, dataset):
+            if not_valid := validate_json(validation_schema, dataset):
                 invalid_datasets.append(not_valid)
             else:
                 valid_datasets.append(transform_dataset(dataset=dataset))
@@ -178,7 +161,7 @@ def ingest(event, _):
                     # No version change - move to next dataset
                     continue
 
-                if i["status"] != "ok" and time_elapsed < 60 * 60 * 24 * 7:
+                if i["status"] != "ok" and time_elapsed < 5:
                     # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
@@ -190,10 +173,10 @@ def ingest(event, _):
                     )
                 except RequestException as e:
                     # Fetching single dataset failed - update sync status
-                    logger.log_text(
-                        f'Schema not supported for dataset {i["identifier"]}',
-                        severity="INFO",
+                    logging.warning(
+                        f'Schema not supported for dataset {i["identifier"]}'
                     )
+
                     sync_list.extend(
                         create_sync_array(
                             datasets=[i],
@@ -204,13 +187,17 @@ def ingest(event, _):
                     fetch_failed_datasets.append(i)
                     continue
 
-                validation_schema = custodian_version["@schema"]
+                validation_schema = (
+                    custodian_version["@schema"]
+                    if "@schema" in custodian_version
+                    else ""
+                )
 
-                if not verify_schema_version(schema_url):
-                    logger.log_text(
-                        f'Schema not supported for dataset {i["identifier"]}',
-                        severity="INFO",
+                if not verify_schema_version(validation_schema):
+                    logging.warning(
+                        f'Schema not supported for dataset {i["identifier"]}'
                     )
+
                     sync_list.extend(
                         create_sync_array(
                             datasets=[i],
@@ -288,25 +275,24 @@ def ingest(event, _):
                 unsupported_version_datasets=unsupported_version_datasets,
             )
 
+        logging.info(f"FMA ingestion for {custodian_name} completed")
+
     except CriticalError as e:
         # Critical error raised, log error, send an error email and exit the script
-        if os.getenv("ENVIRONMENT") == "dev":
-            # Only print errors to stdout in development
-            print(e)
-
-        logger.log_struct({"error": str(e), "source": custodian_name}, severity="ERROR")
+        logging.critical(e)
         send_error_mail(publisher_name=custodian_name, error=str(e))
         sys.exit(1)
 
     except Exception as e:
-        # Unknown exception raised, print error and exit the program
-        print(e)
+        # Unknown exception raised, log error and exit the program
+        logging.critical(e)
         sys.exit(1)
 
 
 def initialise_db(mongo_uri):
     try:
-        db = MongoClient(mongo_uri)[os.getenv("DATABASE_DATABASE")]
+        uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
+        db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
         return db
     except Exception as e:
         raise CriticalError(f"Error connecting to database: {e}")
