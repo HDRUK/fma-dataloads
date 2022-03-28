@@ -28,7 +28,6 @@ def get_latest_gateway_dataset(db, pid=""):
     except IndexError:
         return None
     except Exception as e:
-        print(e.__class__.__name__)
         raise CriticalError(
             f"Error retrieving latest version of dataset {pid} from the Gateway: {e}"
         )
