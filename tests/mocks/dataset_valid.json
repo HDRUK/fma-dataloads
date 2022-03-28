@@ -1,0 +1,53 @@
+{
+    "identifier": "226fb3f1-4471-400a-8c39-2b66d46a39b1",
+    "version": "3.0.0",
+    "summary": {
+        "title": "Exemplar title 1",
+        "abstract": "Exemplar abstract 1.",
+        "contactPoint": "test@test.custodian.ac.uk",
+        "publisher": {
+            "memberOf": "ALLIANCE",
+            "name": "SAIL",
+            "identifier": "5f3f98068af2ef61552e1d75",
+            "contactPoint": "test@test.com"
+        },
+        "keywords": ["Pain Hub", "Alleviate", "Pain"]
+    },
+    "documentation": {
+        "description": "This is a test description 1",
+        "associatedMedia": ["https://pubmed.ncbi.nlm.nih.gov/28934932/"]
+    },
+    "revisions": [""],
+    "modified": "2021-10-05T16:25:43Z",
+    "issued": "2021-09-27T15:10:28Z",
+    "provenance": {
+        "temporal": {
+            "timeLag": "NOT APPLICABLE",
+            "accrualPeriodicity": "STATIC",
+            "startDate": "2018-09-01"
+        }
+    },
+    "accessibility": {
+        "formatAndStandards": {
+            "conformsTo": ["LOCAL"],
+            "language": ["en"],
+            "format": ["csv"],
+            "vocabularyEncodingScheme": ["LOCAL"]
+        },
+        "access": {
+            "accessRights": ["https://localhost"],
+            "dataController": "Telford Databank (Not a real custodian)",
+            "jurisdiction": ["GB-ENG"]
+        }
+    },
+    "observations": [{
+        "observedNode": "PERSONS",
+        "measuredValue": 9000,
+        "observationDate": "2021-09-27",
+        "measuredProperty": "Count"
+    }],
+    "coverage": {
+        "spatial": ["https://www.geonames.org/6269131/england.html"]
+    },
+    "structuralMetadata": []
+}

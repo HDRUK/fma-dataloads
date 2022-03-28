@@ -8,3 +8,6 @@ dev.py
 .vscode
 
 __pycache__
+
+!dataset_valid.json
+!dataset_invalid.json
