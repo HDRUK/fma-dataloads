@@ -8,3 +8,4 @@ numpy==1.22.3
 pymongo==4.0.2
 jsonschema==4.4.0
 responses==0.20.0
+mongomock==4.0.0
