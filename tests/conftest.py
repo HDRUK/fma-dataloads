@@ -50,6 +50,7 @@ def initialise_db():
         {
             "publisherDetails": {"name": "FAKEY"},
             "_id": ObjectId("6421d1025a55d137b0fa0b89"),
+            "active": True,
         }
     )
 

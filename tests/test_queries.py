@@ -138,6 +138,7 @@ def test_get_publisher(initialise_db):
     expected = {
         "publisherDetails": {"name": "FAKEY"},
         "_id": ObjectId("6421d1025a55d137b0fa0b89"),
+        "active": True,
     }
 
     assert publisher == expected
@@ -149,6 +150,29 @@ def test_get_publisher__raise_exception():
     """
     try:
         get_publisher("badDB", [])
+    except Exception as e:
+        assert e is not None
+
+
+def test_update_publisher(initialise_db):
+    """
+    Function should update the "active" field of the publisher to false.
+    """
+    db = initialise_db
+
+    update_publisher(db, False, "FAKEY")
+
+    updated_publisher = get_publisher(db, "FAKEY")
+
+    assert updated_publisher["federation"]["active"] == False
+
+
+def test_update_publisher__raise_exception():
+    """
+    Function should raise exception if error encountered.
+    """
+    try:
+        update_publisher("badDB", False, "FAKEY")
     except Exception as e:
         assert e is not None
 
