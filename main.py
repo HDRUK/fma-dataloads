@@ -2,6 +2,7 @@ import os
 import sys
 import base64
 import logging
+import pymongo
 
 from datetime import datetime
 from dotenv import load_dotenv
@@ -12,7 +13,7 @@ from functions import *
 load_dotenv()
 
 
-def main(event):
+def main(event) -> None:
     """
     ENTRYPOINT: sync metadata from a given custodian.
     Args:
@@ -289,7 +290,7 @@ def main(event):
         sys.exit(1)
 
 
-def initialise_db(mongo_uri):
+def initialise_db(mongo_uri) -> pymongo.database.Database:
     try:
         uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
         db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]

@@ -2,12 +2,13 @@ import uuid
 import json
 import numpy as np
 
+from typing import Tuple
 from datetime import datetime
 
 from .exceptions import CriticalError
 
 
-def datasets_to_archive(custodian_datasets, gateway_datasets):
+def datasets_to_archive(custodian_datasets, gateway_datasets) -> np.array:
     """
     Determine which datasets to archive within the Gateway.
     """
@@ -31,7 +32,7 @@ def datasets_to_archive(custodian_datasets, gateway_datasets):
     return []
 
 
-def extract_new_datasets(custodian_datasets, gateway_datasets):
+def extract_new_datasets(custodian_datasets, gateway_datasets) -> np.array:
     """
     Determine which datasets are new to the Gateway.
     """
@@ -55,7 +56,9 @@ def extract_new_datasets(custodian_datasets, gateway_datasets):
     return []
 
 
-def extract_overlapping_datasets(custodian_datasets, gateway_datasets):
+def extract_overlapping_datasets(
+    custodian_datasets, gateway_datasets
+) -> Tuple[np.array, np.array]:
     """
     Extract a new array of common datasets that overlap between two lists.
     """
@@ -80,7 +83,7 @@ def extract_overlapping_datasets(custodian_datasets, gateway_datasets):
     return custodian_versions, gateway_versions
 
 
-def transform_dataset(dataset={}, previous_version={}):
+def transform_dataset(dataset={}, previous_version={}) -> dict:
     """
     Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
     """
@@ -125,7 +128,7 @@ def transform_dataset(dataset={}, previous_version={}):
         raise CriticalError(f"Unknown error when tranforming dataset: {e}")
 
 
-def create_sync_array(datasets=[], sync_status="ok", publisher={}):
+def create_sync_array(datasets=[], sync_status="ok", publisher={}) -> list:
     """
     Given a list of datasets, create a list of sync objects with a given status for addition to the Gateway sync collection.
     """
@@ -152,7 +155,7 @@ def create_sync_array(datasets=[], sync_status="ok", publisher={}):
     )
 
 
-def _generate_question_answers(dataset):
+def _generate_question_answers(dataset) -> dict:
     """
     INTERNAL: generate the Gateway questionAnswers field given a datasetv2 object.
     """
@@ -362,7 +365,7 @@ def _generate_question_answers(dataset):
     return question_answers
 
 
-def _keys_exist(element, *keys):
+def _keys_exist(element, *keys) -> bool:
     """
     INTERNAL: helper function to determine if a key exists in a dict.
     """
@@ -375,7 +378,7 @@ def _keys_exist(element, *keys):
     return True
 
 
-def _extract_datasets_by_id(datasets, ids):
+def _extract_datasets_by_id(datasets, ids) -> np.array:
     """
     INTERNAL: given a list of IDs, extract the relevant datasets from the datasets list as a separate list.
     """

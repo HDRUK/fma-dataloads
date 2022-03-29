@@ -7,7 +7,7 @@ from google.cloud import secretmanager
 from .exceptions import CriticalError
 
 
-def get_access_token(token_url="", client_id="", client_secret=""):
+def get_access_token(token_url="", client_id="", client_secret="") -> str:
     """
     Retrieve the access token from the target server using the supplied client credentials.
     """
@@ -30,7 +30,7 @@ def get_access_token(token_url="", client_id="", client_secret=""):
         raise CriticalError(f"Error retrieving access token: {e}")
 
 
-def get_client_secret(secret_name=""):
+def get_client_secret(secret_name="") -> dict:
     """
     Retrieve secret from the Google Secret Manager given a secret name.
     """

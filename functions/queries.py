@@ -1,7 +1,7 @@
 from .exceptions import CriticalError
 
 
-def get_gateway_datasets(db, publisher):
+def get_gateway_datasets(db, publisher) -> list:
     """
     Get a list of datasets from the Gateway relevant to a given custodian (i.e., publisher).
     """
@@ -17,7 +17,7 @@ def get_gateway_datasets(db, publisher):
         )
 
 
-def get_latest_gateway_dataset(db, pid=""):
+def get_latest_gateway_dataset(db, pid="") -> dict:
     """
     Get the latest version of a given dataset from the tools collection in the Gateway
     """
@@ -33,7 +33,7 @@ def get_latest_gateway_dataset(db, pid=""):
         )
 
 
-def archive_gateway_datasets(db, archived_datasets=[]):
+def archive_gateway_datasets(db, archived_datasets=[]) -> None:
     """
     Archive datasets on the Gateway given a list of datasets (which are then mapped to IDs).
     """
@@ -46,7 +46,7 @@ def archive_gateway_datasets(db, archived_datasets=[]):
         raise CriticalError(f"Error archiving datasets on the Gateway: {e}")
 
 
-def add_new_datasets(db, new_datasets=[]):
+def add_new_datasets(db, new_datasets=[]) -> None:
     """
     Add new datasets to the Gateway given a list of datasets.
     """
@@ -58,7 +58,7 @@ def add_new_datasets(db, new_datasets=[]):
         )
 
 
-def get_publisher(db, publisher_name):
+def get_publisher(db, publisher_name) -> dict:
     """
     Get the relevant publisher documentation given a publisher name.
     """
@@ -70,7 +70,7 @@ def get_publisher(db, publisher_name):
         )
 
 
-def sync_datasets(db, sync_list=[]):
+def sync_datasets(db, sync_list=[]) -> None:
     """
     Remove any existing sync status for a given PID and add new sync entry.
     """

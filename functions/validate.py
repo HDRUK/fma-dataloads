@@ -7,7 +7,7 @@ from jsonschema import Draft7Validator
 from functions.exceptions import CriticalError
 
 
-def validate_json(schema_url, dataset):
+def validate_json(schema_url, dataset) -> None or dict:
     """
     Get the relevant schema and validate a datasetv2 object against the schema.
     """
@@ -34,7 +34,7 @@ def validate_json(schema_url, dataset):
         raise CriticalError(f"Error retrieving the datasetv2 validation schema: {e}")
 
 
-def verify_schema_version(schema_url):
+def verify_schema_version(schema_url) -> bool:
     """
     Verify that the supplied schema is either 2.0.0, 2.0.2 or latest.
     """

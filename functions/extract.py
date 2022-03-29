@@ -5,7 +5,7 @@ from requests import RequestException
 from .exceptions import CriticalError
 
 
-def get_datasets(url="", auth_token=""):
+def get_datasets(url="", auth_token="") -> list:
     """
     GET: extract the list of datasets from the target server.
     """

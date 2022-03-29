@@ -12,7 +12,7 @@ def send_summary_mail(
     failed_validation=[],
     fetch_failed_datasets=[],
     unsupported_version_datasets=[],
-):
+) -> None:
     """
     Send a formatted email to the relevant parties.
     """
@@ -53,14 +53,17 @@ def send_summary_mail(
     )
 
 
-def send_error_mail(publisher_name="", error=""):
+def send_error_mail(publisher_name="", error="") -> None:
+    """
+    Send a message to an ops address given an error.
+    """
     message = f"Fully syncing with the {publisher_name} API has failed: " + error
     subject = f"Error syncing federated datasets for {publisher_name} - {datetime.datetime.now().strftime('%d-%m-%y')}"
 
     _send_mail(message=message, subject=subject, email_to=os.getenv("EMAIL_ADMIN"))
 
 
-def _send_mail(message="", subject="", email_to=""):
+def _send_mail(message="", subject="", email_to="") -> None:
     """
     INTERNAL: send a message to a given address.
     """
