@@ -70,6 +70,21 @@ def get_publisher(db, publisher_name) -> dict:
         )
 
 
+def update_publisher(db, status, publisher_name) -> None:
+    """
+    Update the federation status of a publisher, e.g., True/False.
+    """
+    try:
+        db.publishers.update_one(
+            {"publisherDetails.name": publisher_name},
+            {"$set": {"federation.active": status}},
+        )
+    except Exception as e:
+        raise CriticalError(
+            f"Error setting the federation.status of publisher {publisher_name}: {e}"
+        )
+
+
 def sync_datasets(db, sync_list=[]) -> None:
     """
     Remove any existing sync status for a given PID and add new sync entry.

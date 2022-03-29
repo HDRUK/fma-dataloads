@@ -32,9 +32,7 @@ def main(event) -> None:
         publisher = get_publisher(db=db, publisher_name=custodian_name)
 
         if publisher["federation"]["active"] != True:
-            raise CriticalError(
-                f"Federation is deactivated for custodian {custodian_name}"
-            )
+            raise Exception(f"Federation is deactivated for custodian {custodian_name}")
 
         logging.info(f"Initiating FMA ingestion for {custodian_name}")
 
@@ -279,8 +277,9 @@ def main(event) -> None:
         logging.info(f"FMA ingestion for {custodian_name} completed")
 
     except CriticalError as e:
-        # Critical error raised, log error, send an error email and exit the script
+        # Critical error raised, log error, set federation.active to false, send an error email and exit the script
         logging.critical(e)
+        update_publisher(db, status=False, publisher_name=custodian_name)
         send_error_mail(publisher_name=custodian_name, error=str(e))
         sys.exit(1)
 
@@ -291,9 +290,6 @@ def main(event) -> None:
 
 
 def initialise_db(mongo_uri) -> pymongo.database.Database:
-    try:
-        uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
-        db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
-        return db
-    except Exception as e:
-        raise CriticalError(f"Error connecting to database: {e}")
+    uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
+    db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
+    return db
