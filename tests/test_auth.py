@@ -38,7 +38,7 @@ def test_get_access_token__200():
 @responses.activate
 def test_get_access_token__401():
     """
-    Function should raise Exception if status code != 200
+    Function should raise Exception if status code != 200.
     """
     client_id = "unauthorisedClientId"
     client_secret = "authorisedClientSecret"
