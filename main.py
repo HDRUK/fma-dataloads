@@ -173,7 +173,7 @@ def main(event) -> None:
                 except RequestException as e:
                     # Fetching single dataset failed - update sync status
                     logging.error(
-                        f'Error retrieving new dataset {custodian_version["identifier"]}: {e}'
+                        f'Error retrieving updated dataset {custodian_version["identifier"]}: {e}'
                     )
 
                     sync_list.extend(
