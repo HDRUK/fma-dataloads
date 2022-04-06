@@ -160,7 +160,7 @@ def main(event) -> None:
                     # No version change - move to next dataset
                     continue
 
-                if i["status"] != "ok" and time_elapsed < 5:
+                if i["status"] != "ok" and time_elapsed < 60 * 60 * 24 * 7:
                     # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
@@ -172,8 +172,8 @@ def main(event) -> None:
                     )
                 except RequestException as e:
                     # Fetching single dataset failed - update sync status
-                    logging.warning(
-                        f'Schema not supported for dataset {i["identifier"]}'
+                    logging.error(
+                        f'Error retrieving new dataset {custodian_version["identifier"]}: {e}'
                     )
 
                     sync_list.extend(
@@ -194,7 +194,7 @@ def main(event) -> None:
 
                 if not verify_schema_version(validation_schema):
                     logging.warning(
-                        f'Schema not supported for dataset {i["identifier"]}'
+                        f'Schema not supported for dataset {custodian_version["identifier"]}'
                     )
 
                     sync_list.extend(
