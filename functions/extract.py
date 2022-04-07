@@ -1,5 +1,5 @@
 """
-Functions for retrieving datasets or a datasets from the target server.
+Functions for retrieving datasets or a dataset from the target server.
 """
 
 import requests
