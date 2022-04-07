@@ -22,10 +22,8 @@ def get_datasets(url: str = "", auth_token: str = "") -> list:
             data = response.json()
 
             return data["items"]
-        else:
-            raise RequestException(
-                f"A status code of {response.status_code} was received"
-            )
+
+        raise RequestException(f"A status code of {response.status_code} was received")
 
     except Exception as error:
         raise CriticalError(
@@ -44,5 +42,8 @@ def get_dataset(url: str = "", auth_token: str = "", dataset_id: str = ""):
     if response.status_code == 200:
         data = response.json()
         return data
+
+    if response.status_code == 500:
+        raise CriticalError(f"500 error received from {url}")
 
     raise RequestException(f"A status code of {response.status_code} was received")
