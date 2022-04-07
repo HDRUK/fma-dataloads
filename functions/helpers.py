@@ -1,3 +1,7 @@
+"""
+Helper functions for comparing lists and transforming data.
+"""
+
 import uuid
 import json
 import numpy as np
@@ -8,7 +12,9 @@ from datetime import datetime
 from .exceptions import CriticalError
 
 
-def datasets_to_archive(custodian_datasets, gateway_datasets) -> np.array:
+def datasets_to_archive(
+    custodian_datasets: list = None, gateway_datasets: list = None
+) -> np.array:
     """
     Determine which datasets to archive within the Gateway.
     """
@@ -32,7 +38,9 @@ def datasets_to_archive(custodian_datasets, gateway_datasets) -> np.array:
     return []
 
 
-def extract_new_datasets(custodian_datasets, gateway_datasets) -> np.array:
+def extract_new_datasets(
+    custodian_datasets: list = None, gateway_datasets: list = None
+) -> np.array:
     """
     Determine which datasets are new to the Gateway.
     """
@@ -57,7 +65,7 @@ def extract_new_datasets(custodian_datasets, gateway_datasets) -> np.array:
 
 
 def extract_overlapping_datasets(
-    custodian_datasets, gateway_datasets
+    custodian_datasets: list = None, gateway_datasets: list = None
 ) -> Tuple[np.array, np.array]:
     """
     Extract a new array of common datasets that overlap between two lists.
@@ -83,7 +91,7 @@ def extract_overlapping_datasets(
     return custodian_versions, gateway_versions
 
 
-def transform_dataset(dataset={}, previous_version={}) -> dict:
+def transform_dataset(dataset: dict = None, previous_version: dict = None) -> dict:
     """
     Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
     """
@@ -122,13 +130,17 @@ def transform_dataset(dataset={}, previous_version={}) -> dict:
 
         return formatted_dataset
 
-    except KeyError as e:
-        raise CriticalError(f"Key error when tranforming dataset: {e}")
-    except Exception as e:
-        raise CriticalError(f"Unknown error when tranforming dataset: {e}")
+    except KeyError as error:
+        raise CriticalError(f"Key error when tranforming dataset: {error}") from error
+    except Exception as error:
+        raise CriticalError(
+            f"Unknown error when tranforming dataset: {error}"
+        ) from error
 
 
-def create_sync_array(datasets=[], sync_status="ok", publisher={}) -> list:
+def create_sync_array(
+    datasets: np.array = None, sync_status: str = "ok", publisher: dict = None
+) -> list:
     """
     Given a list of datasets, create a list of sync objects with a given status for addition to the Gateway sync collection.
     """
@@ -155,7 +167,7 @@ def create_sync_array(datasets=[], sync_status="ok", publisher={}) -> list:
     )
 
 
-def _generate_question_answers(dataset) -> dict:
+def _generate_question_answers(dataset: dict = None) -> dict:
     """
     INTERNAL: generate the Gateway questionAnswers field given a datasetv2 object.
     """
@@ -338,34 +350,35 @@ def _generate_question_answers(dataset) -> dict:
 
     # Observations
     if _keys_exist(dataset, "observations") and len(dataset["observations"]) > 0:
-        id = 0
+        observation_id = 0
         for i in dataset["observations"]:
             if _keys_exist(i, "observedNode"):
-                question_answers["properties/observation/observedNode" + str(id)] = i[
-                    "observedNode"
-                ]
+                question_answers[
+                    "properties/observation/observedNode" + str(observation_id)
+                ] = i["observedNode"]
             if _keys_exist(i, "measuredValue"):
-                question_answers["properties/observation/measuredValue" + str(id)] = i[
-                    "measuredValue"
-                ]
+                question_answers[
+                    "properties/observation/measuredValue" + str(observation_id)
+                ] = i["measuredValue"]
             if _keys_exist(i, "disambiguatingDescription"):
                 question_answers[
-                    "properties/observation/disambiguatingDescription" + str(id)
+                    "properties/observation/disambiguatingDescription"
+                    + str(observation_id)
                 ] = i["disambiguatingDescription"]
             if _keys_exist(i, "observationDate"):
                 question_answers[
-                    "properties/observation/observationDate" + str(id)
+                    "properties/observation/observationDate" + str(observation_id)
                 ] = i["observationDate"]
             if _keys_exist(i, "measuredProperty"):
                 question_answers[
-                    "properties/observation/measuredProperty" + str(id)
+                    "properties/observation/measuredProperty" + str(observation_id)
                 ] = i["measuredProperty"]
-            id += 1
+            observation_id += 1
 
     return question_answers
 
 
-def _keys_exist(element, *keys) -> bool:
+def _keys_exist(element: dict = None, *keys) -> bool:
     """
     INTERNAL: helper function to determine if a key exists in a dict.
     """
@@ -378,7 +391,7 @@ def _keys_exist(element, *keys) -> bool:
     return True
 
 
-def _extract_datasets_by_id(datasets, ids) -> np.array:
+def _extract_datasets_by_id(datasets: list = None, ids: np.array = None) -> np.array:
     """
     INTERNAL: given a list of IDs, extract the relevant datasets from the datasets list as a separate list.
     """

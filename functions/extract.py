@@ -1,3 +1,7 @@
+"""
+Functions for retrieving datasets or a datasets from the target server.
+"""
+
 import requests
 
 from requests import RequestException
@@ -5,7 +9,7 @@ from requests import RequestException
 from .exceptions import CriticalError
 
 
-def get_datasets(url="", auth_token="") -> list:
+def get_datasets(url: str = "", auth_token: str = "") -> list:
     """
     GET: extract the list of datasets from the target server.
     """
@@ -23,11 +27,13 @@ def get_datasets(url="", auth_token="") -> list:
                 f"A status code of {response.status_code} was received"
             )
 
-    except Exception as e:
-        raise CriticalError(f"Error extracting list of datasets from {url}: {e}")
+    except Exception as error:
+        raise CriticalError(
+            f"Error extracting list of datasets from {url}: {error}"
+        ) from error
 
 
-def get_dataset(url="", auth_token="", dataset_id=""):
+def get_dataset(url: str = "", auth_token: str = "", dataset_id: str = ""):
     """
     GET: extract a single dataset from the target server.
     """
@@ -37,7 +43,6 @@ def get_dataset(url="", auth_token="", dataset_id=""):
 
     if response.status_code == 200:
         data = response.json()
-
         return data
-    else:
-        raise RequestException(f"A status code of {response.status_code} was received")
+
+    raise RequestException(f"A status code of {response.status_code} was received")

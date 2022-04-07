@@ -1,3 +1,7 @@
+"""
+Functions for authorising requests to the server, if required.
+"""
+
 import json
 import requests
 
@@ -7,7 +11,9 @@ from google.cloud import secretmanager
 from .exceptions import CriticalError
 
 
-def get_access_token(token_url="", client_id="", client_secret="") -> str:
+def get_access_token(
+    token_url: str = "", client_id: str = "", client_secret: str = ""
+) -> str:
     """
     Retrieve the access token from the target server using the supplied client credentials.
     """
@@ -26,11 +32,11 @@ def get_access_token(token_url="", client_id="", client_secret="") -> str:
         else:
             raise RequestException("An invalid status code was received")
 
-    except Exception as e:
-        raise CriticalError(f"Error retrieving access token: {e}")
+    except Exception as error:
+        raise CriticalError(f"Error retrieving access token: {error}") from error
 
 
-def get_client_secret(secret_name="") -> dict:
+def get_client_secret(secret_name: str = "") -> dict:
     """
     Retrieve secret from the Google Secret Manager given a secret name.
     """
@@ -41,5 +47,5 @@ def get_client_secret(secret_name="") -> dict:
 
         return json.loads(response.payload.data.decode("utf8").replace("'", '"'))
 
-    except Exception as e:
-        raise CriticalError(f"Error retrieving secrets from GCP: {e}")
+    except Exception as error:
+        raise CriticalError(f"Error retrieving secrets from GCP: {error}") from error

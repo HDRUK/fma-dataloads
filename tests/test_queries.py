@@ -28,8 +28,8 @@ def test_get_gateway_datasets__raise_exception():
     """
     try:
         get_gateway_datasets("badDB", "FAKEY")
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_get_latest_gateway_dataset(initialise_db):
@@ -57,8 +57,8 @@ def test_get_latest_gateway_dataset__raise_exception():
     """
     try:
         get_latest_gateway_dataset("badDB", "pid1")
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_get_latest_gateway_dataset__index_error(initialise_db):
@@ -91,8 +91,8 @@ def test_archive_gateway_datasets__raise_exception():
     """
     try:
         archive_gateway_datasets("badDB", [])
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_add_new_datasets(initialise_db):
@@ -123,8 +123,8 @@ def test_add_new_datasets__raise_exception():
     """
     try:
         add_new_datasets("badDB", [])
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_get_publisher(initialise_db):
@@ -150,8 +150,8 @@ def test_get_publisher__raise_exception():
     """
     try:
         get_publisher("badDB", [])
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_update_publisher(initialise_db):
@@ -164,7 +164,7 @@ def test_update_publisher(initialise_db):
 
     updated_publisher = get_publisher(db, "FAKEY")
 
-    assert updated_publisher["federation"]["active"] == False
+    assert updated_publisher["federation"]["active"] is False
 
 
 def test_update_publisher__raise_exception():
@@ -173,8 +173,8 @@ def test_update_publisher__raise_exception():
     """
     try:
         update_publisher("badDB", False, "FAKEY")
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None
 
 
 def test_sync_datasets(initialise_db):
@@ -201,5 +201,5 @@ def test_sync_datasets__raise_exception():
     """
     try:
         get_publisher("badDB", [])
-    except Exception as e:
-        assert e is not None
+    except Exception as error:
+        assert error is not None

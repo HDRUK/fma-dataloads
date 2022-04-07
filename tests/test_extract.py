@@ -48,9 +48,9 @@ def test_get_datasets__401():
 
     try:
         get_datasets(datasets_url, auth_token)
-    except Exception as e:
+    except Exception as error:
         assert (
-            str(e)
+            str(error)
             == "Error extracting list of datasets from http://custodian/datasets: A status code of 401 was received"
         )
 
@@ -100,5 +100,5 @@ def test_get_dataset__401():
 
     try:
         get_dataset(dataset_url, auth_token, dataset_id)
-    except Exception as e:
-        assert str(e) == "A status code of 401 was received"
+    except Exception as error:
+        assert str(error) == "A status code of 401 was received"

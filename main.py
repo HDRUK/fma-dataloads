@@ -13,7 +13,7 @@ from functions import *
 load_dotenv()
 
 
-def main(event) -> None:
+def main(event: dict) -> None:
     """
     ENTRYPOINT: sync metadata from a given custodian.
     Args:
@@ -31,7 +31,7 @@ def main(event) -> None:
 
         publisher = get_publisher(db=db, publisher_name=custodian_name)
 
-        if publisher["federation"]["active"] != True:
+        if not publisher["federation"]["active"]:
             raise Exception(f"Federation is deactivated for custodian {custodian_name}")
 
         logging.info(f"Initiating FMA ingestion for {custodian_name}")
@@ -99,9 +99,11 @@ def main(event) -> None:
                 dataset = get_dataset(
                     custodian_datasets_url, auth_token, i["identifier"]
                 )
-            except RequestException as e:
+            except RequestException as error:
                 # Fetching single dataset failed - update sync status
-                logging.error(f'Error retrieving new dataset {i["identifier"]}: {e}')
+                logging.error(
+                    f'Error retrieving new dataset {i["identifier"]}: {error}'
+                )
 
                 sync_list.extend(
                     create_sync_array(
@@ -147,7 +149,7 @@ def main(event) -> None:
             for i in gateway_versions:
                 custodian_version = list(
                     filter(
-                        lambda x: x["identifier"] == i["pid"],
+                        lambda x, pid=i["pid"]: x["identifier"] == pid,
                         custodian_versions,
                     )
                 )[0]
@@ -170,10 +172,10 @@ def main(event) -> None:
                         auth_token,
                         custodian_version["identifier"],
                     )
-                except RequestException as e:
+                except RequestException as error:
                     # Fetching single dataset failed - update sync status
                     logging.error(
-                        f'Error retrieving updated dataset {custodian_version["identifier"]}: {e}'
+                        f'Error retrieving updated dataset {custodian_version["identifier"]}: {error}'
                     )
 
                     sync_list.extend(
@@ -276,20 +278,23 @@ def main(event) -> None:
 
         logging.info(f"FMA ingestion for {custodian_name} completed")
 
-    except CriticalError as e:
+    except CriticalError as error:
         # Critical error raised, log error, set federation.active to false, send an error email and exit the script
-        logging.critical(e)
+        logging.critical(error)
         update_publisher(db, status=False, publisher_name=custodian_name)
-        send_error_mail(publisher_name=custodian_name, error=str(e))
+        send_error_mail(publisher_name=custodian_name, error=str(error))
         sys.exit(1)
 
-    except Exception as e:
+    except Exception as error:
         # Unknown exception raised, log error and exit the program
-        logging.critical(e)
+        logging.critical(error)
         sys.exit(1)
 
 
-def initialise_db(mongo_uri) -> pymongo.database.Database:
+def initialise_db(mongo_uri: str = "") -> pymongo.database.Database:
+    """
+    Initialise the connection to Gateway database.
+    """
     uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
     db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
     return db

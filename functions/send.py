@@ -1,3 +1,7 @@
+"""
+Functions for formatting and sending emails via SendGrid.
+"""
+
 import os
 import sendgrid
 import datetime
@@ -6,12 +10,12 @@ from sendgrid.helpers.mail import *
 
 
 def send_summary_mail(
-    publisher={},
-    archived_datasets=[],
-    new_datasets=[],
-    failed_validation=[],
-    fetch_failed_datasets=[],
-    unsupported_version_datasets=[],
+    publisher: dict = None,
+    archived_datasets: list = None,
+    new_datasets: list = None,
+    failed_validation: list = None,
+    fetch_failed_datasets: list = None,
+    unsupported_version_datasets: list = None,
 ) -> None:
     """
     Send a formatted email to the relevant parties.
@@ -53,7 +57,7 @@ def send_summary_mail(
     )
 
 
-def send_error_mail(publisher_name="", error="") -> None:
+def send_error_mail(publisher_name: str = "", error: str = "") -> None:
     """
     Send a message to an ops address given an error.
     """
@@ -63,15 +67,15 @@ def send_error_mail(publisher_name="", error="") -> None:
     _send_mail(message=message, subject=subject, email_to=os.getenv("EMAIL_ADMIN"))
 
 
-def _send_mail(message="", subject="", email_to="") -> None:
+def _send_mail(message: str = "", subject: str = "", email_to: str = "") -> None:
     """
     INTERNAL: send a message to a given address.
     """
-    sg = sendgrid.SendGridAPIClient(api_key=os.environ.get("SENDGRID_API_KEY"))
+    send_grid = sendgrid.SendGridAPIClient(api_key=os.environ.get("SENDGRID_API_KEY"))
     content = Content("text/html", message)
     mail = Mail(Email(os.getenv("EMAIL_SENDER")), To(email_to), subject, content)
 
     try:
-        sg.client.mail.send.post(request_body=mail.get())
-    except Exception as e:
-        print(f"Error sending emails: {e}")
+        send_grid.client.mail.send.post(request_body=mail.get())
+    except Exception as error:
+        print(f"Error sending emails: {error}")

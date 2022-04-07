@@ -1,7 +1,16 @@
+"""
+Functions for querying the Gateway MongoDB database.
+"""
+
+import pymongo
+import numpy as np
+
 from .exceptions import CriticalError
 
 
-def get_gateway_datasets(db, publisher) -> list:
+def get_gateway_datasets(
+    db: pymongo.database.Database = None, publisher: dict = None
+) -> list:
     """
     Get a list of datasets from the Gateway relevant to a given custodian (i.e., publisher).
     """
@@ -11,13 +20,15 @@ def get_gateway_datasets(db, publisher) -> list:
         )
 
         return datasets
-    except Exception as e:
+    except Exception as error:
         raise CriticalError(
-            f"Error retrieving gateway datasets for publisher {publisher}: {e}"
-        )
+            f"Error retrieving gateway datasets for publisher {publisher}: {error}"
+        ) from error
 
 
-def get_latest_gateway_dataset(db, pid="") -> dict:
+def get_latest_gateway_dataset(
+    db: pymongo.database.Database = None, pid: str = ""
+) -> dict:
     """
     Get the latest version of a given dataset from the tools collection in the Gateway
     """
@@ -27,13 +38,15 @@ def get_latest_gateway_dataset(db, pid="") -> dict:
         return datasets[0]
     except IndexError:
         return None
-    except Exception as e:
+    except Exception as error:
         raise CriticalError(
-            f"Error retrieving latest version of dataset {pid} from the Gateway: {e}"
-        )
+            f"Error retrieving latest version of dataset {pid} from the Gateway: {error}"
+        ) from error
 
 
-def archive_gateway_datasets(db, archived_datasets=[]) -> None:
+def archive_gateway_datasets(
+    db: pymongo.database.Database = None, archived_datasets: np.array = None
+) -> None:
     """
     Archive datasets on the Gateway given a list of datasets (which are then mapped to IDs).
     """
@@ -42,35 +55,41 @@ def archive_gateway_datasets(db, archived_datasets=[]) -> None:
             {"pid": {"$in": list(map(lambda x: x["pid"], archived_datasets))}},
             {"$set": {"activeflag": "archive"}},
         )
-    except Exception as e:
-        raise CriticalError(f"Error archiving datasets on the Gateway: {e}")
+    except Exception as error:
+        raise CriticalError(
+            f"Error archiving datasets on the Gateway: {error}"
+        ) from error
 
 
-def add_new_datasets(db, new_datasets=[]) -> None:
+def add_new_datasets(db: pymongo.database.Database = None, new_datasets=None) -> None:
     """
     Add new datasets to the Gateway given a list of datasets.
     """
     try:
         db.tools.insert_many(new_datasets)
-    except Exception as e:
+    except Exception as error:
         raise CriticalError(
-            f"Error inserting list of new datasets into the Gateway: {e}"
-        )
+            f"Error inserting list of new datasets into the Gateway: {error}"
+        ) from error
 
 
-def get_publisher(db, publisher_name) -> dict:
+def get_publisher(
+    db: pymongo.database.Database = None, publisher_name: str = ""
+) -> dict:
     """
     Get the relevant publisher documentation given a publisher name.
     """
     try:
         return db.publishers.find_one({"publisherDetails.name": publisher_name})
-    except Exception as e:
+    except Exception as error:
         raise CriticalError(
-            f"Error retrieving the publisher details from the publisher collection for publisher name {publisher_name}: {e}"
-        )
+            f"Error retrieving the publisher details from the publisher collection for publisher name {publisher_name}: {error}"
+        ) from error
 
 
-def update_publisher(db, status, publisher_name) -> None:
+def update_publisher(
+    db: pymongo.database.Database = None, status: str = "", publisher_name: str = ""
+) -> None:
     """
     Update the federation status of a publisher, e.g., True/False.
     """
@@ -79,18 +98,20 @@ def update_publisher(db, status, publisher_name) -> None:
             {"publisherDetails.name": publisher_name},
             {"$set": {"federation.active": status}},
         )
-    except Exception as e:
+    except Exception as error:
         raise CriticalError(
-            f"Error setting the federation.status of publisher {publisher_name}: {e}"
-        )
+            f"Error setting the federation.status of publisher {publisher_name}: {error}"
+        ) from error
 
 
-def sync_datasets(db, sync_list=[]) -> None:
+def sync_datasets(db: pymongo.database.Database = None, sync_list: list = None) -> None:
     """
     Remove any existing sync status for a given PID and add new sync entry.
     """
     try:
         db.sync.delete_many({"pid": {"$in": list(map(lambda x: x["pid"], sync_list))}})
         db.sync.insert_many(sync_list)
-    except Exception as e:
-        raise CriticalError(f"Error updating the sync collection on the Gateway: {e}")
+    except Exception as error:
+        raise CriticalError(
+            f"Error updating the sync collection on the Gateway: {error}"
+        ) from error

@@ -52,8 +52,8 @@ def test_get_access_token__401():
 
     try:
         get_access_token(token_url, client_id, client_secret)
-    except Exception as e:
+    except Exception as error:
         assert (
-            str(e)
+            str(error)
             == "Error retrieving access token: An invalid status code was received"
         )

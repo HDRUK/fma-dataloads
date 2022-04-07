@@ -1,3 +1,7 @@
+"""
+Functions for validating the datasets and validating the dataset version.
+"""
+
 import re
 import requests
 
@@ -7,7 +11,7 @@ from jsonschema import Draft7Validator
 from functions.exceptions import CriticalError
 
 
-def validate_json(schema_url, dataset) -> None or dict:
+def validate_json(schema_url: str = "", dataset: dict = None) -> None or dict:
     """
     Get the relevant schema and validate a datasetv2 object against the schema.
     """
@@ -30,11 +34,13 @@ def validate_json(schema_url, dataset) -> None or dict:
             return dataset
 
         return
-    except RequestException as e:
-        raise CriticalError(f"Error retrieving the datasetv2 validation schema: {e}")
+    except RequestException as error:
+        raise CriticalError(
+            f"Error retrieving the datasetv2 validation schema: {error}"
+        ) from error
 
 
-def verify_schema_version(schema_url) -> bool:
+def verify_schema_version(schema_url: str = "") -> bool:
     """
     Verify that the supplied schema is either 2.0.0, 2.0.2 or latest.
     """
