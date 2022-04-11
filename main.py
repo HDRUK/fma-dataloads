@@ -42,9 +42,9 @@ def main(custodian_id: str) -> None:
         custodian_id: The relevant MongoDB _id for the Gateway publisher collection.
 
     Description:
-        Authorise with publishers catalogue (if req.) pull list of datasets, compare
-        datasets with Gateway sync collection for updates, new, archived and modify
-        Gateway database accordingly.
+        Authorise with publishers catalogue (if req.), pull list of datasets, compare
+        datasets with Gateway sync collection for updates, new and archived datasets and
+        modify the Gateway database accordingly.
     """
     try:
         logging.basicConfig(level=logging.INFO)
