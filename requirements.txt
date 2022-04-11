@@ -10,3 +10,4 @@ jsonschema==4.4.0
 responses==0.20.0
 mongomock==4.0.0
 pylint==2.13.5
+flask==2.1.1

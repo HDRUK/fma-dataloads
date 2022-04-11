@@ -5,6 +5,8 @@ Functions for querying the Gateway MongoDB database.
 import pymongo
 import numpy as np
 
+from bson.objectid import ObjectId
+
 from .exceptions import CriticalError
 
 
@@ -73,34 +75,32 @@ def add_new_datasets(db: pymongo.database.Database = None, new_datasets=None) ->
         ) from error
 
 
-def get_publisher(
-    db: pymongo.database.Database = None, publisher_name: str = ""
-) -> dict:
+def get_publisher(db: pymongo.database.Database = None, custodian_id: str = "") -> dict:
     """
-    Get the relevant publisher documentation given a publisher name.
+    Get the relevant publisher documentation given a publisher _id.
     """
     try:
-        return db.publishers.find_one({"publisherDetails.name": publisher_name})
+        return db.publishers.find_one({"_id": ObjectId(custodian_id)})
     except Exception as error:
         raise CriticalError(
-            f"Error retrieving the publisher details from the publisher collection for publisher name {publisher_name}: {error}"
+            f"Error retrieving the publisher details from the publisher collection for publisher _id {custodian_id}: {error}"
         ) from error
 
 
 def update_publisher(
-    db: pymongo.database.Database = None, status: str = "", publisher_name: str = ""
+    db: pymongo.database.Database = None, status: str = "", custodian_id: str = ""
 ) -> None:
     """
     Update the federation status of a publisher, e.g., True/False.
     """
     try:
         db.publishers.update_one(
-            {"publisherDetails.name": publisher_name},
+            {"_id": ObjectId(custodian_id)},
             {"$set": {"federation.active": status}},
         )
     except Exception as error:
         raise CriticalError(
-            f"Error setting the federation.status of publisher {publisher_name}: {error}"
+            f"Error setting the federation.status of publisher _id {custodian_id}: {error}"
         ) from error
 
 

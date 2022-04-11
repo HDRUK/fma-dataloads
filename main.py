@@ -1,27 +1,47 @@
 import os
-import sys
+import http
 import base64
 import logging
 import pymongo
 
+from threading import Thread
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from flask import Flask, request, Response
 
 from functions import *
 
 load_dotenv()
 
+app = Flask(__name__)
 
-def main(event: dict) -> None:
+
+@app.route("/", methods=["POST"])
+def trigger() -> Response:
     """
-    ENTRYPOINT: sync metadata from a given custodian.
+    HTTP trigger for Cloud Scheduler.
+
+    Description:
+        HTTP request starts ingestion procedure on a new thread asynchronously
+        and responds 204 NO CONTENT.
+    """
+    request_data = request.get_json()
+    custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
+
+    Thread(target=main, args=(custodian_id,)).start()
+
+    return ("", http.HTTPStatus.NO_CONTENT)
+
+
+def main(custodian_id: str) -> None:
+    """
+    Sync metadata for a given publisher/custodian catalogue.
+
     Args:
-        event (dict): Event payload inc. base64 encoded publisher name (ex. { "data": "U0FJTA==" })
+        custodian_id: The relevant MongoDB _id for the Gateway publisher collection.
     """
     try:
-        custodian_name = base64.b64decode(event["data"]).decode("utf-8")
-
         logging.basicConfig(level=logging.INFO)
         db = initialise_db(os.getenv("MONGO_URI"))
 
@@ -29,7 +49,8 @@ def main(event: dict) -> None:
         # GET publisher details
         ##########################################
 
-        publisher = get_publisher(db=db, publisher_name=custodian_name)
+        publisher = get_publisher(db=db, custodian_id=custodian_id)
+        custodian_name = publisher["publisherDetails"]["name"]
 
         if not publisher["federation"]["active"]:
             raise Exception(f"Federation is deactivated for custodian {custodian_name}")
@@ -281,19 +302,17 @@ def main(event: dict) -> None:
     except CriticalError as error:
         # Critical error raised, log error, set federation.active to false, send an error email and exit the script
         logging.critical(error)
-        update_publisher(db, status=False, publisher_name=custodian_name)
+        update_publisher(db, status=False, custodian_id=custodian_id)
         send_error_mail(publisher_name=custodian_name, error=str(error))
-        sys.exit(1)
 
     except Exception as error:
         # Unknown exception raised, log error and exit the program
         logging.critical(error)
-        sys.exit(1)
 
 
 def initialise_db(mongo_uri: str = "") -> pymongo.database.Database:
     """
-    Initialise the connection to Gateway database.
+    Initialise connection to the Gateway database.
     """
     uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
     db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
