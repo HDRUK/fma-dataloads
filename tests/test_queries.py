@@ -133,7 +133,7 @@ def test_get_publisher(initialise_db):
     """
     db = initialise_db
 
-    publisher = get_publisher(db, "FAKEY")
+    publisher = get_publisher(db, "6421d1025a55d137b0fa0b89")
 
     expected = {
         "publisherDetails": {"name": "FAKEY"},
@@ -160,9 +160,9 @@ def test_update_publisher(initialise_db):
     """
     db = initialise_db
 
-    update_publisher(db, False, "FAKEY")
+    update_publisher(db, False, "6421d1025a55d137b0fa0b89")
 
-    updated_publisher = get_publisher(db, "FAKEY")
+    updated_publisher = get_publisher(db, "6421d1025a55d137b0fa0b89")
 
     assert updated_publisher["federation"]["active"] is False
 
@@ -172,7 +172,7 @@ def test_update_publisher__raise_exception():
     Function should raise exception if error encountered.
     """
     try:
-        update_publisher("badDB", False, "FAKEY")
+        update_publisher("badDB", False, "6421d1025a55d137b0fa0b89")
     except Exception as error:
         assert error is not None
 
