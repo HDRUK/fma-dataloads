@@ -179,7 +179,7 @@ def test_update_publisher__raise_exception():
 
 def test_sync_datasets(initialise_db):
     """
-    Function should update the sync collection correctly.
+    Function should update the sync_status collection correctly.
     """
     db = initialise_db
     sync_list = [
@@ -190,7 +190,7 @@ def test_sync_datasets(initialise_db):
 
     sync_datasets(db, sync_list)
 
-    sync_test = db.sync.find_one({"pid": "dataset1"})
+    sync_test = db.sync_status.find_one({"pid": "dataset1"})
 
     assert sync_test["status"] == "ok"
 

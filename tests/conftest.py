@@ -12,7 +12,7 @@ def initialise_db():
     client = mongomock.MongoClient()
     db = client["custodian"]
 
-    db.sync.insert_many(
+    db.sync_status.insert_many(
         [
             {"pid": "dataset1", "publisherName": "FAKEY", "status": "fetch_failed"},
             {"pid": "dataset2", "publisherName": "FAKEY", "status": "fetch_failed"},

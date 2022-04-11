@@ -17,7 +17,7 @@ def get_gateway_datasets(
     Get a list of datasets from the Gateway relevant to a given custodian (i.e., publisher).
     """
     try:
-        datasets = db.sync.find(
+        datasets = db.sync_status.find(
             {"publisherName": publisher},
         )
 
@@ -114,9 +114,11 @@ def sync_datasets(db: pymongo.database.Database = None, sync_list: list = None) 
     Remove any existing sync status for a given PID and add new sync entry.
     """
     try:
-        db.sync.delete_many({"pid": {"$in": list(map(lambda x: x["pid"], sync_list))}})
-        db.sync.insert_many(sync_list)
+        db.sync_status.delete_many(
+            {"pid": {"$in": list(map(lambda x: x["pid"], sync_list))}}
+        )
+        db.sync_status.insert_many(sync_list)
     except Exception as error:
         raise CriticalError(
-            f"Error updating the sync collection on the Gateway: {error}"
+            f"Error updating the sync_status collection on the Gateway: {error}"
         ) from error
