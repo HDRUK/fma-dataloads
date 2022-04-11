@@ -80,9 +80,14 @@ def get_publisher(db: pymongo.database.Database = None, custodian_id: str = "") 
     Get the relevant publisher documentation given a publisher _id.
     """
     try:
-        return db.publishers.find_one({"_id": ObjectId(custodian_id)})
+        publisher = db.publishers.find_one({"_id": ObjectId(custodian_id)})
+
+        if publisher:
+            return publisher
+
+        raise Exception(f"publisher not found for _id {custodian_id}")
     except Exception as error:
-        raise CriticalError(
+        raise Exception(
             f"Error retrieving the publisher details from the publisher collection for publisher _id {custodian_id}: {error}"
         ) from error
 
