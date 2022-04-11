@@ -2,7 +2,6 @@ import os
 import http
 import base64
 import logging
-import pymongo
 
 from threading import Thread
 from datetime import datetime
@@ -13,8 +12,10 @@ from flask import Flask, request, Response
 from functions import *
 
 load_dotenv()
-
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+mongo_uri = os.getenv("MONGO_URI") + "/" + os.getenv("MONGO_DATABASE")
+db = MongoClient(mongo_uri)[os.getenv("MONGO_DATABASE")]
 
 
 @app.route("/", methods=["POST"])
@@ -47,9 +48,6 @@ def main(custodian_id: str) -> None:
         modify the Gateway database accordingly.
     """
     try:
-        logging.basicConfig(level=logging.INFO)
-        db = initialise_db(os.getenv("MONGO_URI"))
-
         ##########################################
         # GET publisher details
         ##########################################
@@ -313,12 +311,3 @@ def main(custodian_id: str) -> None:
     except Exception as error:
         # Unknown exception raised, log error and exit the program
         logging.critical(error)
-
-
-def initialise_db(mongo_uri: str = "") -> pymongo.database.Database:
-    """
-    Initialise connection to the Gateway database.
-    """
-    uri = mongo_uri + "/" + os.getenv("MONGO_DATABASE")
-    db = MongoClient(uri)[os.getenv("MONGO_DATABASE")]
-    return db
