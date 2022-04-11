@@ -1,6 +1,6 @@
 ## Federated Metadata Automation
 
-A Python 3.8 ETL script for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
+A Python 3.8 ETL script wrapped as a Flask application for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
 
 ### Setup
 
@@ -11,6 +11,12 @@ $ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
 
+```
+
+Add the entrypoint for the Flask application.
+
+```
+export FLASK_APP=main.py
 ```
 
 ### .env
@@ -28,10 +34,31 @@ EMAIL_ADMIN=<<email address to send error notification to>>
 A path to authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS)
 ```
 
-### Example
+### Run
 
-The script can be triggered by passing a base64 encoded metadata publisher/custodian name in a dict to the main function in main.py.
+This ETL script is triggered by a HTTP request (for example, from Cloud Scheduler). This request triggers the ingestion script and returns a 204 - no content status.
+
+To run this application:
 
 ```
-python -c "from main import *; main({\"data\": \"<base64 encoded publisher name>\"})"
+running locally:
+
+$ flask run
+
+running in a container:
+
+$ flask run --host=0.0.0.0
 ```
+
+To trigger the ingestion script, you need to pass the MongoDB \_id ObjectId for the relevant publisher and database environment in the JSON body of a POST request:
+
+```
+POST http://[host:port]
+
+{ data: "<BASE64 encoded _id>" }
+
+Reponses:
+    204 - no content
+```
+
+The server will respond 204 if the HTTP trigger is successful. The request endpoint is configured as a trigger (i.e., akin to a cloud function) and will start the ingestion sctipt asynchronously and respond 204 immediately to acknowledge receipt of the request. No HTTP response is given by the actual ingestion procedure.
