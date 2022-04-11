@@ -12,10 +12,11 @@ from flask import Flask, request, Response
 from functions import *
 
 load_dotenv()
-app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
-mongo_uri = os.getenv("MONGO_URI") + "/" + os.getenv("MONGO_DATABASE")
-db = MongoClient(mongo_uri)[os.getenv("MONGO_DATABASE")]
+
+app = Flask(__name__)
+client = MongoClient(os.getenv("MONGO_URI") + "/" + os.getenv("MONGO_DATABASE"))
+db = client[os.getenv("MONGO_DATABASE")]
 
 
 @app.route("/", methods=["POST"])
