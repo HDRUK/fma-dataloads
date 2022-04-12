@@ -4,7 +4,6 @@ import base64
 import logging
 
 from threading import Thread
-from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from flask import Flask, request, Response
