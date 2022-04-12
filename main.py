@@ -179,16 +179,8 @@ def main(custodian_id: str) -> None:
                     )
                 )[0]
 
-                time_elapsed = datetime.timestamp(datetime.now()) - datetime.timestamp(
-                    i["lastSync"]
-                )
-
                 if i["status"] == "ok" and i["version"] == custodian_version["version"]:
                     # No version change - move to next dataset
-                    continue
-
-                if i["status"] != "ok" and time_elapsed < 60 * 60 * 24 * 7:
-                    # Previously failed validation but within 7 day window - move to next dataset
                     continue
 
                 try:
@@ -210,7 +202,7 @@ def main(custodian_id: str) -> None:
                             publisher=publisher,
                         )
                     )
-                    fetch_failed_datasets.append(i)
+                    fetch_failed_datasets.append(custodian_version)
                     continue
 
                 validation_schema = (
@@ -231,7 +223,7 @@ def main(custodian_id: str) -> None:
                             publisher=publisher,
                         )
                     )
-                    unsupported_version_datasets.append(i)
+                    unsupported_version_datasets.append(custodian_version)
                     continue
 
                 if not_valid := validate_json(validation_schema, new_datasetv2):
