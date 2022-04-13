@@ -8,8 +8,6 @@ RUN python -m pip install -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP=main.py
+EXPOSE 8080
 
-EXPOSE 5000
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD [ "python3", "-m" , "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "main:app"]
