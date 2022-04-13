@@ -33,7 +33,7 @@ def trigger() -> Response:
 
     Thread(target=main, args=(custodian_id,)).start()
 
-    return ("", http.HTTPStatus.NO_CONTENT)
+    return ("", http.HTTPStatus.OK)
 
 
 def main(custodian_id: str) -> None:
