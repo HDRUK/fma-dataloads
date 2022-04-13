@@ -10,6 +10,7 @@ from flask import Flask, request, Response
 
 from functions import *
 
+
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
