@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD [ "python3", "-m" , "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "main:app"]
+CMD [ "python3", "-m" , "gunicorn", "--workers", "1", "--threads", "8", "--bind", "0.0.0.0:8080", "main:app"]

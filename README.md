@@ -43,11 +43,11 @@ To run this application:
 ```
 running locally:
 
-$ flask run
+$ gunicorn --workers 1 --threads 8 main:app
 
 running in a container:
 
-$ flask run --host=0.0.0.0
+$ gunicorn --workers 1 --threads 8 --bind 0.0.0.0:8080 main:app
 ```
 
 To trigger the ingestion script, you need to pass the MongoDB \_id ObjectId for the relevant publisher and database environment in the JSON body of a POST request:
@@ -58,7 +58,7 @@ POST http://[host:port]
 { data: "<BASE64 encoded _id>" }
 
 Reponses:
-    204 - no content
+    200 - ok
 ```
 
-The server will respond 204 if the HTTP trigger is successful. The request endpoint is configured as a trigger (i.e., akin to a cloud function) and will start the ingestion sctipt asynchronously and respond 204 immediately to acknowledge receipt of the request. No HTTP response is given by the actual ingestion procedure.
+The server will respond 200 if the HTTP trigger is successful. The request endpoint is configured as a trigger (i.e., akin to a cloud function) and will start the ingestion sctipt asynchronously and respond 200 immediately to acknowledge receipt of the request. No HTTP response is given by the actual ingestion procedure.
