@@ -116,7 +116,7 @@ def transform_dataset(dataset: dict = None, previous_version: dict = None) -> di
             "tags": {
                 "features": dataset["summary"]["keywords"],
             },
-            "source": "FMA",
+            "source": "federation",
             "createdAt": datetime.now(),
             "updatedAt": datetime.now(),
         }
