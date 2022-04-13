@@ -11,3 +11,5 @@ __pycache__
 
 !dataset_valid.json
 !dataset_invalid.json
+
+.DS_Store
