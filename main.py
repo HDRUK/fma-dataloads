@@ -164,7 +164,7 @@ def main(custodian_id: str) -> None:
         ##########################################
         # PID already exists in sync collection
 
-        if len(gateway_datasets) > 0:
+        if len(gateway_datasets) > 0 and len(custodian_datasets) > 0:
             (
                 custodian_versions,
                 gateway_versions,
