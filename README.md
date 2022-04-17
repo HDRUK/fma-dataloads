@@ -1,6 +1,6 @@
 ## Federated Metadata Automation
 
-A Python 3.8+ ETL script wrapped as a Flask application for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
+A Python 3.8+ ETL package wrapped as a Flask application for ingesting custodian datasets in v2 specification, validating their structure according to the HDR UK dataset v2 specifcation and uploading them to the Gateway as part of the Federated Metadata Automation data flow.
 
 ### Setup
 

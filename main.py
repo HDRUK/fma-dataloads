@@ -26,7 +26,7 @@ def trigger() -> Response:
 
     Description:
         HTTP request starts ingestion procedure on a new thread asynchronously
-        and responds 204 NO CONTENT.
+        and responds 200 OK.
     """
     request_data = request.get_json()
     custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
