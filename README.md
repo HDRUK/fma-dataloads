@@ -13,12 +13,6 @@ $ pip install -r requirements.txt
 
 ```
 
-Add the entrypoint for the Flask application.
-
-```
-export FLASK_APP=main.py
-```
-
 ### .env
 
 ```
@@ -31,12 +25,12 @@ SENDGRID_API_KEY=<<SendGrid API key>>
 EMAIL_SENDER=<<email address to use as sender>>
 EMAIL_ADMIN=<<email address to send error notification to>>
 
-A path to authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS)
+A path to an authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS) when running locally
 ```
 
 ### Run
 
-This ETL script is triggered by a HTTP request (for example, from Cloud Scheduler). This request triggers the ingestion script and returns a 204 - no content status.
+The ETL ingestion procedure is triggered by a HTTP request (for example, from Cloud Scheduler). This request triggers the ingestion process and returns a 200 - OK status to acknowledge receipt of the request.
 
 To run this application:
 
@@ -50,7 +44,7 @@ running in a container:
 $ gunicorn --workers 1 --threads 8 --bind 0.0.0.0:8080 main:app
 ```
 
-To trigger the ingestion script, you need to pass the MongoDB \_id ObjectId for the relevant publisher and database environment in the JSON body of a POST request:
+The MongoDB \_id ObjectId for the relevant publisher and database environment must be given in the JSON body of a POST request:
 
 ```
 POST http://[host:port]
