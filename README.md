@@ -23,7 +23,6 @@ MONGO_DATABASE=<<MongoDB database name>>
 // SendGrid and emails
 SENDGRID_API_KEY=<<SendGrid API key>>
 EMAIL_SENDER=<<email address to use as sender>>
-EMAIL_ADMIN=<<email address to send error notification to>>
 
 A path to an authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS) when running locally
 ```

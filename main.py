@@ -115,8 +115,8 @@ def main(custodian_id: str) -> None:
 
         sync_list = []
         invalid_datasets = []
-        valid_datasets = []
-        fetch_failed_datasets = []
+        new_valid_datasets = []
+        updated_valid_datasets = []
         unsupported_version_datasets = []
 
         for i in new_datasets:
@@ -137,7 +137,6 @@ def main(custodian_id: str) -> None:
                         publisher=publisher,
                     )
                 )
-                fetch_failed_datasets.append(i)
                 continue
 
             validation_schema = i["@schema"] if "@schema" in i else ""
@@ -158,7 +157,7 @@ def main(custodian_id: str) -> None:
             if not_valid := validate_json(validation_schema, dataset):
                 invalid_datasets.append(not_valid)
             else:
-                valid_datasets.append(transform_dataset(dataset=dataset))
+                new_valid_datasets.append(transform_dataset(dataset=dataset))
 
         ##########################################
         # UPDATE logic
@@ -202,7 +201,6 @@ def main(custodian_id: str) -> None:
                             publisher=publisher,
                         )
                     )
-                    fetch_failed_datasets.append(custodian_version)
                     continue
 
                 validation_schema = (
@@ -233,10 +231,12 @@ def main(custodian_id: str) -> None:
 
                     if not latest_dataset:
                         # New dataset not in tools, exists in sync, but previously fetch_failed or validation_failed
-                        valid_datasets.append(transform_dataset(dataset=new_datasetv2))
+                        updated_valid_datasets.append(
+                            transform_dataset(dataset=new_datasetv2)
+                        )
                         continue
 
-                    valid_datasets.append(
+                    updated_valid_datasets.append(
                         transform_dataset(
                             dataset=new_datasetv2, previous_version=latest_dataset
                         )
@@ -251,11 +251,13 @@ def main(custodian_id: str) -> None:
         if len(archived_datasets) > 0:
             archive_gateway_datasets(db=db, archived_datasets=archived_datasets)
 
-        if len(valid_datasets) > 0:
-            add_new_datasets(db=db, new_datasets=valid_datasets)
+        if len([*new_valid_datasets, *updated_valid_datasets]) > 0:
+            add_new_datasets(
+                db=db, new_datasets=[*new_valid_datasets, *updated_valid_datasets]
+            )
             sync_list.extend(
                 create_sync_array(
-                    datasets=valid_datasets,
+                    datasets=[*new_valid_datasets, *updated_valid_datasets],
                     sync_status="ok",
                     publisher=publisher,
                 )
@@ -279,17 +281,17 @@ def main(custodian_id: str) -> None:
 
         if (
             len(archived_datasets) > 0
-            or len(valid_datasets) > 0
+            or len(new_valid_datasets) > 0
+            or len(updated_valid_datasets) > 0
             or len(invalid_datasets) > 0
-            or len(fetch_failed_datasets) > 0
             or len(unsupported_version_datasets) > 0
         ):
             send_summary_mail(
                 publisher=publisher,
                 archived_datasets=archived_datasets,
-                new_datasets=valid_datasets,
+                new_datasets=new_valid_datasets,
+                updated_datasets=updated_valid_datasets,
                 failed_validation=invalid_datasets,
-                fetch_failed_datasets=fetch_failed_datasets,
                 unsupported_version_datasets=unsupported_version_datasets,
             )
 
@@ -299,7 +301,6 @@ def main(custodian_id: str) -> None:
         # Critical error raised, log error, set federation.active to false, send an error email and exit the script
         logging.critical(error)
         update_publisher(db, status=False, custodian_id=custodian_id)
-        send_error_mail(publisher_name=custodian_name, error=str(error))
 
     except Exception as error:
         # Unknown exception raised, log error and exit the program
