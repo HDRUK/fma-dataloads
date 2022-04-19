@@ -3,9 +3,11 @@ Functions for formatting and sending emails via SendGrid.
 """
 
 import os
+import base64
 import sendgrid
 import datetime
 
+from fpdf import FPDF
 from sendgrid.helpers.mail import *
 
 
@@ -20,7 +22,9 @@ def send_summary_mail(
     """
     Build a formatted email for sending to the relevant parties.
     """
-    subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d-%m-%y')})"
+    attachment = None
+
+    subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d/%m/%y')})"
 
     message = """<div style="border: 1px solid #d0d3d4; border-radius: 15px; width: 700px; margin: 0 auto;">
                 <table
@@ -31,6 +35,8 @@ def send_summary_mail(
                 width="700"
                 style="font-family: Arial, sans-serif">
                 <thead>"""
+
+    message += f"""<tr style="text-align: left;"><th>Federated metadata synchronisation summary for {datetime.datetime.now().strftime('%d/%m/%y')}</th></tr><tr></tr>"""
 
     if len(new_datasets) > 0:
         message += _format_html_list(
@@ -57,8 +63,9 @@ def send_summary_mail(
         )
 
     if len(failed_validation) > 0:
+        attachment = _create_pdf(failed_validation)
         message += _format_html_list(
-            datasets=unsupported_version_datasets,
+            datasets=failed_validation,
             subtitle="Validation failed",
             pid_key="identifier",
             version_key="version",
@@ -78,10 +85,13 @@ def send_summary_mail(
         message=message,
         subject=subject,
         email_to=publisher["federation"]["notificationEmail"],
+        attachment=attachment,
     )
 
 
-def _send_mail(message: str = "", subject: str = "", email_to: str = "") -> None:
+def _send_mail(
+    message: str = "", subject: str = "", email_to: str = "", attachment: bytes = None
+) -> None:
     """
     INTERNAL: send a message to a given address.
     """
@@ -89,6 +99,18 @@ def _send_mail(message: str = "", subject: str = "", email_to: str = "") -> None
     email_body = _get_header() + message + _get_footer()
     content = Content("text/html", email_body)
     mail = Mail(Email(os.getenv("EMAIL_SENDER")), To(email_to), subject, content)
+
+    if attachment:
+        attached_file = Attachment(
+            FileContent(base64.b64encode(attachment).decode()),
+            FileName(
+                f"{datetime.datetime.now().strftime('%Y%m%d')}_validation_summary.pdf"
+            ),
+            FileType("application/pdf"),
+            Disposition("attachment"),
+        )
+
+        mail.attachment = attached_file
 
     try:
         send_grid.client.mail.send.post(request_body=mail.get())
@@ -102,7 +124,7 @@ def _format_html_list(
     """
     INTERNAL: return a formatted list of datasets and their versions for a given subsection of the email.
     """
-    html = f"""<tr><th style="border: 0; color: #29235c; font-size: 14px; text-align: left;">{subtitle} (total: {len(datasets)}): </th></tr>"""
+    html = f"""<tr><th style="border: 0; color: #29235c; font-size: 14px; text-align: left;">{subtitle} ({len(datasets)}): </th></tr>"""
 
     if subtitle == "Validation failed":
         html += """<tr><th style="border: 0; font-size: 12px; text-align: left;">
@@ -161,3 +183,42 @@ def _get_footer() -> str:
               </tbody>
             </table>
           </div>"""
+
+
+def _create_pdf(invalid_datasets: list = None) -> bytes:
+    """
+    INTERNAL: generate the PDF attachment for the validation errors (if any).
+    """
+    pdf = PDF()
+
+    for i in invalid_datasets:
+        pdf.add_page()
+        pdf.set_font("Arial", size=12, style="B")
+        pdf.cell(0, 10, txt=f'{i["summary"]["title"]} ({i["identifier"]})', ln=1)
+        pdf.set_font("Arial", size=10)
+
+        for j in i["validation_errors"]:
+            pdf.cell(5, 5, txt=" - ", ln=0)
+            pdf.multi_cell(
+                0,
+                5,
+                txt=f'{"/".join(j["path"])}: {j["error"]}',
+            )
+
+    return pdf.output(dest="S").encode("latin-1")
+
+
+class PDF(FPDF):
+    """
+    Subclass of FPDF to add footer and page number to every page.
+    """
+
+    def header(self):
+        self.set_font("Arial", "I", 8)
+        self.cell(0, 10, "FMA validation errors", 0, 0, "R")
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", "I", 8)
+        self.cell(0, 10, f"{self.page_no()}", 0, 0, "R")
