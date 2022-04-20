@@ -5,10 +5,9 @@ Functions for authorising requests to the server, if required.
 import json
 import requests
 
-from requests import RequestException
 from google.cloud import secretmanager
 
-from .exceptions import CriticalError
+from .exceptions import *
 
 
 def get_access_token(
@@ -17,23 +16,28 @@ def get_access_token(
     """
     Retrieve the access token from the target server using the supplied client credentials.
     """
-    try:
-        post = requests.post(
-            token_url,
-            data={
-                "grant_type": "client_credentials",
-                "client_id": client_id,
-                "client_secret": client_secret,
-            },
+
+    post = requests.post(
+        token_url,
+        data={
+            "grant_type": "client_credentials",
+            "client_id": client_id,
+            "client_secret": client_secret,
+        },
+    )
+
+    if post.status_code == 200:
+        return post.json()["access_token"]
+
+    if post.status_code == 401 or post.status_code == 403:
+        raise AuthError(
+            f"Authorisation error: unauthorised {post.status_code} error was received from {token_url}",
+            url=token_url,
         )
 
-        if post.status_code == 200:
-            return post.json()["access_token"]
-        else:
-            raise RequestException("An invalid status code was received")
-
-    except Exception as error:
-        raise CriticalError(f"Error retrieving access token: {error}") from error
+    raise RequestError(
+        f"An invalid status code was received from {token_url}", url=token_url
+    )
 
 
 def get_client_secret(secret_name: str = "") -> dict:

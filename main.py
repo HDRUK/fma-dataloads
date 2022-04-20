@@ -124,7 +124,7 @@ def main(custodian_id: str) -> None:
                 dataset = get_dataset(
                     custodian_datasets_url, auth_token, i["identifier"]
                 )
-            except RequestException as error:
+            except RequestError as error:
                 # Fetching single dataset failed - update sync status
                 logging.error(
                     f'Error retrieving new dataset {i["identifier"]}: {error}'
@@ -188,7 +188,7 @@ def main(custodian_id: str) -> None:
                         auth_token,
                         custodian_version["identifier"],
                     )
-                except RequestException as error:
+                except RequestError as error:
                     # Fetching single dataset failed - update sync status
                     logging.error(
                         f'Error retrieving updated dataset {custodian_version["identifier"]}: {error}'
@@ -295,13 +295,21 @@ def main(custodian_id: str) -> None:
                 unsupported_version_datasets=unsupported_version_datasets,
             )
 
-        logging.info(f"FMA ingestion for {custodian_name} completed")
-
-    except CriticalError as error:
-        # Critical error raised, log error, set federation.active to false, send an error email and exit the script
+    except (CriticalError, RequestError, AuthError) as error:
+        # Custom error raised, log error, send email if required, set federation.active to false
         logging.critical(error)
+
+        if error.__class__.__name__ == "AuthError":
+            send_auth_error_mail(publisher=publisher, url=error.__url__())
+
+        if error.__class__.__name__ == "RequestError":
+            send_auth_error_mail(publisher=publisher, url=error.__url__())
+
         update_publisher(db, status=False, custodian_id=custodian_id)
 
     except Exception as error:
-        # Unknown exception raised, log error and exit the program
+        # Unknown exception raised, log error
         logging.critical(error)
+
+    else:
+        logging.info(f"FMA ingestion for {custodian_name} completed")

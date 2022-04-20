@@ -41,7 +41,7 @@ def test_get_access_token__401():
     Function should raise Exception if status code != 200.
     """
     client_id = "unauthorisedClientId"
-    client_secret = "authorisedClientSecret"
+    client_secret = "unauthorisedClientSecret"
     token_url = "http://auth.com/token"
 
     responses.add(
@@ -55,5 +55,29 @@ def test_get_access_token__401():
     except Exception as error:
         assert (
             str(error)
-            == "Error retrieving access token: An invalid status code was received"
+            == f"Authorisation error: unauthorised 401 error was received from {token_url}"
+        )
+
+
+@responses.activate
+def test_get_access_token__403():
+    """
+    Function should raise Exception if status code != 200.
+    """
+    client_id = "unauthorisedClientId"
+    client_secret = "unauthorisedClientSecret"
+    token_url = "http://auth.com/token"
+
+    responses.add(
+        responses.POST,
+        token_url,
+        status=403,
+    )
+
+    try:
+        get_access_token(token_url, client_id, client_secret)
+    except Exception as error:
+        assert (
+            str(error)
+            == f"Authorisation error: unauthorised 403 error was received from {token_url}"
         )

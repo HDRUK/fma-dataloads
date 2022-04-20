@@ -89,6 +89,69 @@ def send_summary_mail(
     )
 
 
+def send_datasets_error_mail(publisher: dict = None, url: str = ""):
+    """
+    Build a formatted email for warning the custodian of a failur to connect to /datasets.
+    """
+    subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d/%m/%y')}) - error retrieving list of datasets"
+
+    message = """<div style="border: 1px solid #d0d3d4; border-radius: 15px; width: 700px; margin: 0 auto;">
+                <table
+                align="center"
+                border="0"
+                cellpadding="0"
+                cellspacing="10"
+                width="700"
+                style="font-family: Arial, sans-serif">
+                <thead>"""
+
+    message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal;">During the federated metadata synchronisation process, our systems encountered
+                    an error when retrieving data from your organisation's "/datasets" endpoint at {url}.
+                    
+                    <p></p>
+                    
+                    This endpoint is critical to the functionality of the ingestion script. As such,
+                    we have paused metadata syncing for your account. Please contact HDR UK's Data Improvement Team to resolve this issue.
+                    </th></tr>"""
+
+    _send_mail(
+        message=message,
+        subject=subject,
+        email_to=publisher["federation"]["notificationEmail"],
+    )
+
+
+def send_auth_error_mail(publisher: dict = None, url: str = ""):
+    """
+    Build a formatted email for warning the custodian of a failur to connect to /datasets.
+    """
+    subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d/%m/%y')}) - authorisation error"
+
+    message = """<div style="border: 1px solid #d0d3d4; border-radius: 15px; width: 700px; margin: 0 auto;">
+                <table
+                align="center"
+                border="0"
+                cellpadding="0"
+                cellspacing="10"
+                width="700"
+                style="font-family: Arial, sans-serif">
+                <thead>"""
+
+    message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal;">During the federated metadata synchronisation process, our systems were
+                    unable to authorise with the following endpoint: {url}.
+                    
+                    <p></p>
+                    
+                    For the moment, we have paused metadata syncing for your account. Please contact HDR UK's Data Improvement Team to resolve this issue.
+                    </th></tr>"""
+
+    _send_mail(
+        message=message,
+        subject=subject,
+        email_to=publisher["federation"]["notificationEmail"],
+    )
+
+
 def _send_mail(
     message: str = "", subject: str = "", email_to: str = "", attachment: bytes = None
 ) -> None:

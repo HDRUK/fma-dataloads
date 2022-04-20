@@ -4,9 +4,7 @@ Functions for retrieving datasets or a dataset from the target server.
 
 import requests
 
-from requests import RequestException
-
-from .exceptions import CriticalError
+from .exceptions import *
 
 
 def get_datasets(url: str = "", auth_token: str = "") -> list:
@@ -15,20 +13,23 @@ def get_datasets(url: str = "", auth_token: str = "") -> list:
     """
     headers = {"Authorization": auth_token}
 
-    try:
-        response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers)
 
-        if response.status_code == 200:
-            data = response.json()
+    if response.status_code == 200:
+        data = response.json()
 
-            return data["items"]
+        return data["items"]
 
-        raise RequestException(f"A status code of {response.status_code} was received")
+    if response.status_code == 401 or response.status_code == 403:
+        raise AuthError(
+            f"Authorisation error: unauthorised {response.status_code} error was received from {url}",
+            url=url,
+        )
 
-    except Exception as error:
-        raise CriticalError(
-            f"Error extracting list of datasets from {url}: {error}"
-        ) from error
+    raise RequestError(
+        f"Error extracting list of datasets: a status code of {response.status_code} was received from {url}",
+        url=url,
+    )
 
 
 def get_dataset(url: str = "", auth_token: str = "", dataset_id: str = ""):
@@ -43,7 +44,10 @@ def get_dataset(url: str = "", auth_token: str = "", dataset_id: str = ""):
         data = response.json()
         return data
 
-    if response.status_code == 500:
-        raise CriticalError(f"500 error received from {url}")
+    if response.status_code == 401 or response.status_code == 403:
+        raise AuthError(
+            f"Authorisation error: unauthorised {response.status_code} error was received from {url}",
+            url=url,
+        )
 
-    raise RequestException(f"A status code of {response.status_code} was received")
+    raise RequestError(f"A status code of {response.status_code} was received", url=url)

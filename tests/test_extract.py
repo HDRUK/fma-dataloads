@@ -51,7 +51,30 @@ def test_get_datasets__401():
     except Exception as error:
         assert (
             str(error)
-            == "Error extracting list of datasets from http://custodian/datasets: A status code of 401 was received"
+            == f"Authorisation error: unauthorised 401 error was received from {datasets_url}"
+        )
+
+
+@responses.activate
+def test_get_datasets__403():
+    """
+    Function should raise Exception if status code != 200.
+    """
+    datasets_url = "http://custodian/datasets"
+    auth_token = "invalidAuthJWT"
+
+    responses.add(
+        responses.GET,
+        datasets_url,
+        status=403,
+    )
+
+    try:
+        get_datasets(datasets_url, auth_token)
+    except Exception as error:
+        assert (
+            str(error)
+            == f"Authorisation error: unauthorised 403 error was received from {datasets_url}"
         )
 
 
@@ -101,4 +124,31 @@ def test_get_dataset__401():
     try:
         get_dataset(dataset_url, auth_token, dataset_id)
     except Exception as error:
-        assert str(error) == "A status code of 401 was received"
+        assert (
+            str(error)
+            == f"Authorisation error: unauthorised 401 error was received from {dataset_url}"
+        )
+
+
+@responses.activate
+def test_get_dataset__403():
+    """
+    Function should raise Exception if status code != 200.
+    """
+    dataset_url = "http://custodian/datasets"
+    auth_token = "testAuthJWT"
+    dataset_id = "abc"
+
+    responses.add(
+        responses.GET,
+        dataset_url + "/" + dataset_id,
+        status=403,
+    )
+
+    try:
+        get_dataset(dataset_url, auth_token, dataset_id)
+    except Exception as error:
+        assert (
+            str(error)
+            == f"Authorisation error: unauthorised 403 error was received from {dataset_url}"
+        )
