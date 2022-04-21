@@ -279,12 +279,15 @@ def main(custodian_id: str) -> None:
         # Emails
         ##########################################
 
-        if (
-            len(archived_datasets) > 0
-            or len(new_valid_datasets) > 0
-            or len(updated_valid_datasets) > 0
-            or len(invalid_datasets) > 0
-            or len(unsupported_version_datasets) > 0
+        if any(
+            len(datasets) > 0
+            for datasets in [
+                archived_datasets,
+                new_valid_datasets,
+                updated_valid_datasets,
+                invalid_datasets,
+                unsupported_version_datasets,
+            ]
         ):
             send_summary_mail(
                 publisher=publisher,
