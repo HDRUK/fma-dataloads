@@ -303,7 +303,7 @@ def main(custodian_id: str) -> None:
             send_auth_error_mail(publisher=publisher, url=error.__url__())
 
         if error.__class__.__name__ == "RequestError":
-            send_auth_error_mail(publisher=publisher, url=error.__url__())
+            send_datasets_error_mail(publisher=publisher, url=error.__url__())
 
         update_publisher(db, status=False, custodian_id=custodian_id)
 
