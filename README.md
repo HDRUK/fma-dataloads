@@ -36,11 +36,11 @@ To run this application:
 ```
 running locally:
 
-$ gunicorn --workers 1 --threads 8 main:app
+$ gunicorn --workers {NUM} --threads {NUM} main:app
 
 running in a container:
 
-$ gunicorn --workers 1 --threads 8 --bind 0.0.0.0:8080 main:app
+$ gunicorn --workers {NUM} --threads {NUM} --bind 0.0.0.0:8080 main:app
 ```
 
 The MongoDB \_id ObjectId for the relevant publisher and database environment must be given in the JSON body of a POST request:
