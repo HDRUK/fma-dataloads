@@ -158,7 +158,9 @@ def main(custodian_id: str) -> None:
             if not_valid := validate_json(validation_schema, dataset):
                 invalid_datasets.append(not_valid)
             else:
-                new_valid_datasets.append(transform_dataset(dataset=dataset))
+                new_valid_datasets.append(
+                    transform_dataset(publisher=publisher, dataset=dataset)
+                )
 
         ##########################################
         # UPDATE logic
@@ -236,13 +238,17 @@ def main(custodian_id: str) -> None:
                     if not latest_dataset:
                         # New dataset not in tools, exists in sync, but previously fetch_failed or validation_failed
                         new_valid_datasets.append(
-                            transform_dataset(dataset=new_datasetv2)
+                            transform_dataset(
+                                publisher=publisher, dataset=new_datasetv2
+                            )
                         )
                         continue
 
                     updated_valid_datasets.append(
                         transform_dataset(
-                            dataset=new_datasetv2, previous_version=latest_dataset
+                            publisher=publisher,
+                            dataset=new_datasetv2,
+                            previous_version=latest_dataset,
                         )
                     )
 

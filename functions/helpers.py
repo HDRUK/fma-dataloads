@@ -93,7 +93,9 @@ def extract_overlapping_datasets(
     return custodian_versions, gateway_versions
 
 
-def transform_dataset(dataset: dict = None, previous_version: dict = None) -> dict:
+def transform_dataset(
+    publisher: dict = None, dataset: dict = None, previous_version: dict = None
+) -> dict:
     """
     Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
     """
@@ -133,7 +135,7 @@ def transform_dataset(dataset: dict = None, previous_version: dict = None) -> di
             "datasetid": str(uuid.uuid4()),
             "questionAnswers": json.dumps(_generate_question_answers(dataset)),
             "activeflag": "inReview",
-            "is5Safes": True,
+            "is5Safes": True if publisher["uses5Safes"] else False,
             "structuralMetadata": [],
             "timestamps": {
                 "created": datetime.now(),
