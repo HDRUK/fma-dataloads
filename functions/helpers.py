@@ -8,6 +8,7 @@ import numpy as np
 
 from typing import Tuple
 from datetime import datetime
+from collections.abc import Mapping
 
 from .exceptions import CriticalError
 
@@ -96,6 +97,8 @@ def transform_dataset(dataset: dict = None, previous_version: dict = None) -> di
     Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
     """
     try:
+        dataset = _merge_dictionaries(dataset)
+
         formatted_dataset = {
             "datasetv2": dataset,
             "name": dataset["summary"]["title"],
@@ -414,3 +417,131 @@ def _extract_datasets_by_id(datasets: list = None, ids: np.array = None) -> np.a
                 )
             )
         )
+
+
+def _flatten(dictionary: dict = None, parent_key: str = "", sep: str = "/") -> dict:
+    """
+    INTERNAL: flatten a dict to a single dimension.
+    """
+    items = []
+    for k, v in dictionary.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if v and isinstance(v, Mapping):
+            items.extend(_flatten(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+
+def _unflatten(dictionary: dict = None, sep: str = "/") -> dict:
+    """
+    INTERNAL: unflatten a dict to multiple dimensions.
+    """
+    result = {}
+    for key, value in dictionary.items():
+        parts = key.split(sep)
+        data = result
+        for part in parts[:-1]:
+            if part not in data:
+                data[part] = {}
+            data = data[part]
+        data[parts[-1]] = value
+    return result
+
+
+def _merge_dictionaries(dictionary: dict = None) -> dict:
+    """
+    INTERNAL: merge two dictionaries, creating an empty field where missing from data.
+
+    This function is neccessary because the Gateway EXPECTS fields which are NOT required
+    by the validation schema.
+    """
+    # This is the minimum viable datasetv2 that is required for the Gateway to function
+    minimum_viable_datasetv2 = {
+        "identifier": "",
+        "version": "",
+        "issued": "",
+        "modified": "",
+        "revisions": [],
+        "summary": {
+            "title": "",
+            "abstract": "",
+            "publisher": {
+                "identifier": "",
+                "name": "",
+                "logo": "",
+                "description": "",
+                "contactPoint": [],
+                "memberOf": "",
+                "accessRights": [],
+                "deliveryLeadTime": "",
+                "accessService": "",
+                "accessRequestCost": "",
+                "dataUseLimitation": [],
+                "dataUseRequirements": [],
+            },
+            "contactPoint": "",
+            "keywords": [],
+            "alternateIdentifiers": [],
+            "doiName": "",
+        },
+        "documentation": {
+            "description": "",
+            "associatedMedia": [],
+            "isPartOf": [],
+        },
+        "coverage": {
+            "spatial": [],
+            "typicalAgeRange": "",
+            "physicalSampleAvailability": [],
+            "followup": "",
+            "pathway": "",
+        },
+        "provenance": {
+            "origin": {"purpose": [], "source": [], "collectionSituation": []},
+            "temporal": {
+                "accrualPeriodicity": "",
+                "distributionReleaseDate": "",
+                "startDate": "",
+                "endDate": "",
+                "timeLag": "",
+            },
+        },
+        "accessibility": {
+            "usage": {
+                "dataUseLimitation": [],
+                "dataUseRequirements": [],
+                "resourceCreator": [],
+                "investigations": [],
+                "isReferencedBy": [],
+            },
+            "access": {
+                "accessRights": [],
+                "accessService": "",
+                "accessRequestCost": [],
+                "deliveryLeadTime": "",
+                "jurisdiction": [],
+                "dataProcessor": "",
+                "dataController": "",
+            },
+            "formatAndStandards": {
+                "vocabularyEncodingScheme": [],
+                "conformsTo": [],
+                "language": [],
+                "format": [],
+            },
+        },
+        "enrichmentAndLinkage": {
+            "qualifiedRelation": [],
+            "derivation": [],
+            "tools": [],
+        },
+        "observations": [],
+    }
+
+    merged_dictionary = dictionary.copy()
+    for key, value in _flatten(minimum_viable_datasetv2).items():
+        if key not in _flatten(dictionary) or _flatten(dictionary)[key] == "":
+            merged_dictionary[key] = value
+
+    return _unflatten(merged_dictionary)
