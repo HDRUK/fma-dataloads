@@ -31,7 +31,7 @@ def send_summary_mail(
         align="center"
         border="0"
         cellpadding="0"
-        cellspacing="10"
+        cellspacing="20"
         width="700"
         style="font-family: Arial, sans-serif">
         <thead>
@@ -44,7 +44,7 @@ def send_summary_mail(
         """
 
     if len(new_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">New datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">New datasets: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             {len(new_datasets)} new dataset(s) were successfully ingested from your catalogue, they are now pending our internal review.
             If approved, they will become live on the Innovation Gateway - and any further updates made in your catalogue will be
@@ -62,7 +62,7 @@ def send_summary_mail(
         )
 
     if len(updated_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">Updated datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Updated datasets: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             Updated information was found for {len(updated_datasets)} existing dataset(s) in your catalogue, 
             the entries on the Innovation Gateway have been updated accordingly
@@ -78,7 +78,7 @@ def send_summary_mail(
         )
 
     if len(archived_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">Archived datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Archived datasets: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             {len(archived_datasets)} datasets were previously ingested from your metadata catalogue, but were not found on this run - these 
             datasets have been archived on the Innovation Gateway and are no longer discoverable to those without a direct url.
@@ -97,7 +97,7 @@ def send_summary_mail(
         if len(failed_validation) > 0:
             attachment = _create_pdf(failed_validation)
 
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">Failed validation/unsupported version: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Failed validation/unsupported version: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             {len([*unsupported_version_datasets, *failed_validation])} datasets failed validation against our metadata schema, please ensure that all 
             metadata exposed through the endpoint is conformant to our schema (https://github.com/HDRUK/schemata). We support ingestion of datasets which 
@@ -134,7 +134,7 @@ def send_datasets_error_mail(publisher: dict = None, url: str = ""):
         align="center"
         border="0"
         cellpadding="0"
-        cellspacing="10"
+        cellspacing="20"
         width="700"
         style="font-family: Arial, sans-serif">
         <thead>
@@ -170,7 +170,7 @@ def send_auth_error_mail(publisher: dict = None, url: str = ""):
         align="center"
         border="0"
         cellpadding="0"
-        cellspacing="10"
+        cellspacing="20"
         width="700"
         style="font-family: Arial, sans-serif">
         <thead>
