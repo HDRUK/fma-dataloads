@@ -40,7 +40,8 @@ def send_summary_mail(
     message += f"""<tr style="text-align: left;"><th style="font-weight: normal;">Ingestion of dataset metadata for {publisher["publisherDetails"]["name"]} from 
         {publisher["federation"]["endpoints"]["baseURL"]} ran without any critical errors. A summary of the results of the 
         action are listed below{"." if len(failed_validation) == 0 else ", and more detailed logs are included in the attached pdf."}
-        </th></tr><tr></tr>"""
+        </th></tr><tr></tr>
+        """
 
     if len(new_datasets) > 0:
         message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">New datasets: </th></tr>"""
@@ -80,7 +81,7 @@ def send_summary_mail(
         message += """<tr><th style="border: 0; color: #29235c; font-size: 16px; text-align: left;">Archived datasets: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             {len(archived_datasets)} datasets were previously ingested from your metadata catalogue, but were not found on this run - these 
-            datasets have been archived on the Innovation Gateway and are no longer discoverable to those without a direct url.</th></tr>
+            datasets have been archived on the Innovation Gateway and are no longer discoverable to those without a direct url.
                     
             <p></p>
                         
@@ -136,16 +137,20 @@ def send_datasets_error_mail(publisher: dict = None, url: str = ""):
         cellspacing="10"
         width="700"
         style="font-family: Arial, sans-serif">
-        <thead>"""
+        <thead>
+        """
 
-    message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal;">During the federated metadata synchronisation process, our systems encountered
+    message += f"""<tr style="text-align: left;"><th style="font-weight: normal;">During the federated metadata synchronisation process, our systems encountered
         an error when retrieving data from your organisation's "/datasets" endpoint at {url}.
                     
         <p></p>
                     
         This endpoint is critical to the functionality of the ingestion script. As such,
         we have paused metadata syncing for your account. Please get in touch with us at service@healthdatagateway.com to resolve the issue.
-        </th></tr>"""
+        </th></tr>
+
+        </thead></table></div>
+        """
 
     _send_mail(
         message=message,
@@ -168,15 +173,19 @@ def send_auth_error_mail(publisher: dict = None, url: str = ""):
         cellspacing="10"
         width="700"
         style="font-family: Arial, sans-serif">
-        <thead>"""
+        <thead>
+        """
 
-    message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal;">We were unable to authorise on the following endpoint: {url}.
+    message += f"""<tr style="text-align: left;"><th style="font-weight: normal;">We were unable to authorise on the following endpoint: {url}.
                     
         <p></p>
                     
         Because we were unable to authenticate, ingestion of metadata from your catalogue will be paused until this is resolved. Please get in touch 
         with us at service@healthdatagateway.com to resolve the issue.
-        </th></tr>"""
+        </th></tr>
+
+        </thead></table></div>
+        """
 
     _send_mail(
         message=message,
@@ -246,7 +255,7 @@ def _format_html_list(datasets: list = None, key: str = "") -> str:
             unsupported_version = f""" - unsupported schema {i["@schema"]}"""
 
         html += f"""<li style="border: 0; font-size: 14px; font-weight: normal; color: #333333; text-align: left;">
-            {dataset_name} (version: {version}){dataset_link}{unsupported_version}
+            {dataset_name} (version {version}){dataset_link}{unsupported_version}
             </li>"""
 
     html += "</ul></th></tr>"
@@ -259,7 +268,8 @@ def _get_header() -> str:
     """
     return """<img src="https://storage.googleapis.com/hdruk-gateway_prod-cms/web-assets/HDRUK_logo_colour.png" 
         alt="HDR UK Logo" width="127" height="63" style="display: block; margin-left: auto; margin-right: 
-        auto; margin-bottom: 24px; margin-top: 24px;"></img>"""
+        auto; margin-bottom: 24px; margin-top: 24px;"></img>
+        """
 
 
 def _get_footer() -> str:
