@@ -158,6 +158,7 @@ def create_sync_array(
             lambda x: {
                 "publisherName": publisher["publisherDetails"]["name"],
                 "pid": x[pid_key],
+                "name": x["name"] if "name" in x.keys() else x["summary"]["title"],
                 "version": x[version_key],
                 "status": sync_status,
                 "lastSync": datetime.now(),

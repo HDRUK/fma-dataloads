@@ -117,6 +117,7 @@ def main(custodian_id: str) -> None:
         invalid_datasets = []
         new_valid_datasets = []
         updated_valid_datasets = []
+        previous_version_datasets = []
         unsupported_version_datasets = []
 
         for i in new_datasets:
@@ -178,7 +179,10 @@ def main(custodian_id: str) -> None:
                     )
                 )[0]
 
-                if i["status"] == "ok" and i["version"] == custodian_version["version"]:
+                if (
+                    i["status"] in ["ok", "validation_failed"]
+                    and i["version"] == custodian_version["version"]
+                ):
                     # No version change - move to next dataset
                     continue
 
@@ -231,7 +235,7 @@ def main(custodian_id: str) -> None:
 
                     if not latest_dataset:
                         # New dataset not in tools, exists in sync, but previously fetch_failed or validation_failed
-                        updated_valid_datasets.append(
+                        new_valid_datasets.append(
                             transform_dataset(dataset=new_datasetv2)
                         )
                         continue
@@ -242,14 +246,20 @@ def main(custodian_id: str) -> None:
                         )
                     )
 
-                    archived_datasets.append(i)
+                    previous_version_datasets.append(i)
 
         ##########################################
         # Database operations
         ##########################################
 
-        if len(archived_datasets) > 0:
-            archive_gateway_datasets(db=db, archived_datasets=archived_datasets)
+        if len([*archived_datasets, *previous_version_datasets]) > 0:
+            archive_gateway_datasets(
+                db=db,
+                archived_datasets=[
+                    *archived_datasets,
+                    *previous_version_datasets,
+                ],
+            )
 
         if len([*new_valid_datasets, *updated_valid_datasets]) > 0:
             add_new_datasets(
@@ -308,7 +318,7 @@ def main(custodian_id: str) -> None:
         if error.__class__.__name__ == "RequestError":
             send_datasets_error_mail(publisher=publisher, url=error.__url__())
 
-        update_publisher(db, status=False, custodian_id=custodian_id)
+        # update_publisher(db, status=False, custodian_id=custodian_id)
 
     except Exception as error:
         # Unknown exception raised, log error
