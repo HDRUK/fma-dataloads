@@ -106,12 +106,35 @@ def transform_dataset(dataset: dict = None, previous_version: dict = None) -> di
             "datasetVersion": dataset["version"],
             "type": "dataset",
             "pid": dataset["identifier"],
-            "datasetfields": {},
+            "datasetfields": {
+                "publisher": dataset["summary"]["publisher"]["memberOf"]
+                + ">"
+                + dataset["summary"]["publisher"]["name"],
+                "geographicCoverage": dataset["coverage"]["spatial"],
+                "physicalSampleAvailability": dataset["coverage"][
+                    "physicalSampleAvailability"
+                ],
+                "abstract": dataset["summary"]["abstract"],
+                "releaseDate": dataset["provenance"]["temporal"][
+                    "distributionReleaseDate"
+                ],
+                "accessRequestDuration": "",
+                "datasetStartDate": dataset["provenance"]["temporal"]["startDate"],
+                "datasetEndDate": dataset["provenance"]["temporal"]["endDate"],
+                "ageBand": dataset["coverage"]["typicalAgeRange"]
+                if _keys_exist(dataset, "coverage", "typicalAgeRange")
+                else "",
+                "contactPoint": dataset["summary"]["contactPoint"],
+                "periodicity": dataset["provenance"]["temporal"]["accrualPeriodicity"],
+                "metadataquality": {},
+                "technicaldetails": [],
+                "phenotypes": [],
+            },
             "datasetid": str(uuid.uuid4()),
             "questionAnswers": json.dumps(_generate_question_answers(dataset)),
             "activeflag": "inReview",
             "is5Safes": True,
-            "structuralMetadata": dataset["structuralMetadata"],
+            "structuralMetadata": [],
             "timestamps": {
                 "created": datetime.now(),
                 "updated": datetime.now(),
@@ -126,11 +149,23 @@ def transform_dataset(dataset: dict = None, previous_version: dict = None) -> di
         }
 
         if previous_version:
-            formatted_dataset["datasetfields"] = previous_version["datasetfields"]
+            formatted_dataset["datasetfields"]["metadataquality"] = previous_version[
+                "datasetfields"
+            ]["metadataquality"]
 
         if previous_version and previous_version["activeflag"] == "active":
             formatted_dataset["activeflag"] = "active"
             formatted_dataset["timestamps"]["published"] = datetime.now()
+
+        if len(dataset["structuralMetadata"]) > 0:
+            formatted_dataset["structuralMetadata"] = _format_structural_metadata(
+                formatted_dataset["datasetv2"]["structuralMetadata"]
+            )
+            formatted_dataset["datasetfields"][
+                "technicaldetails"
+            ] = _format_technical_details(
+                formatted_dataset["datasetv2"]["structuralMetadata"]
+            )
 
         return formatted_dataset
 
@@ -548,3 +583,52 @@ def _merge_dictionaries(dictionary: dict = None) -> dict:
             merged_dictionary[key] = value
 
     return _unflatten(merged_dictionary)
+
+
+def _format_structural_metadata(metadata: list = None) -> list:
+    """
+    INTERNAL: convert SM from schema format to format required for structuralMetadata.
+    """
+    formatted_metadata = []
+
+    for i in metadata:
+        for j in i["elements"]:
+            formatted_metadata.append(
+                {
+                    "tableName": i["name"],
+                    "tableDescription": i["description"],
+                    "columnName": j["name"],
+                    "columnDescription": j["description"],
+                    "dataType": j["dataType"],
+                    "sensitive": j["sensitive"],
+                }
+            )
+
+    return formatted_metadata
+
+
+def _format_technical_details(metadata: list = None) -> list:
+    """
+    INTERNAL: convert SM from schema format to format for datasetfields.technicalDetails.
+    """
+    formatted_metadata = []
+
+    for i in metadata:
+        array_item = {
+            "label": i["name"],
+            "description": i["description"],
+            "domainType": "DataClass",
+            "elements": [],
+        }
+        for j in i["elements"]:
+            array_item["elements"].append(
+                {
+                    "label": j["name"],
+                    "description": j["description"],
+                    "domainType": "DataElement",
+                    "dataType": {"label": j["dataType"], "domainType": "PrimitiveType"},
+                }
+            )
+        formatted_metadata.append(array_item)
+
+    return formatted_metadata
