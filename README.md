@@ -24,6 +24,9 @@ MONGO_DATABASE=<<MongoDB database name>>
 SENDGRID_API_KEY=<<SendGrid API key>>
 EMAIL_SENDER=<<email address to use as sender>>
 
+// Environment - used to add links to emails
+GATEWAY_ENVIRONMENT =<<base dataset path for gateway web>> ex. "http://localhost:3000/dataset/"
+
 A path to an authorised GCP service account credentials must also be in the environment (e.g., GOOGLE_APPLICATION_CREDENTIALS) when running locally
 ```
 
