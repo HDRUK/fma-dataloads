@@ -4,6 +4,7 @@ Helper functions for comparing lists and transforming data.
 
 import uuid
 import json
+import string
 import numpy as np
 
 from typing import Tuple
@@ -354,7 +355,7 @@ def _generate_question_answers(dataset: dict = None) -> dict:
 
     # Observations
     if _keys_exist(dataset, "observations") and len(dataset["observations"]) > 0:
-        observation_id = 0
+        observation_id = ""
         for i in dataset["observations"]:
             if _keys_exist(i, "observedNode"):
                 question_answers[
@@ -377,7 +378,9 @@ def _generate_question_answers(dataset: dict = None) -> dict:
                 question_answers[
                     "properties/observation/measuredProperty" + str(observation_id)
                 ] = i["measuredProperty"]
-            observation_id += 1
+            observation_id = "_" + str(
+                np.random.choice(list(string.ascii_uppercase + string.digits), 5)
+            )
 
     return question_answers
 
