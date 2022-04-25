@@ -169,6 +169,14 @@ def transform_dataset(
                 formatted_dataset["datasetv2"]["structuralMetadata"]
             )
 
+        metadata_quality = _build_metadata_score(
+            dataset=dataset,
+            structural_metadata=formatted_dataset["structuralMetadata"],
+            publisher=publisher,
+        )
+
+        formatted_dataset["datasetfields"]["metadataquality"] = metadata_quality
+
         return formatted_dataset
 
     except KeyError as error:
@@ -464,12 +472,12 @@ def _flatten(dictionary: dict = None, parent_key: str = "", sep: str = "/") -> d
     INTERNAL: flatten a dict to a single dimension.
     """
     items = []
-    for k, v in dictionary.items():
-        new_key = parent_key + sep + k if parent_key else k
-        if v and isinstance(v, Mapping):
-            items.extend(_flatten(v, new_key, sep=sep).items())
+    for key, value in dictionary.items():
+        new_key = parent_key + sep + key if parent_key else key
+        if value and isinstance(value, Mapping):
+            items.extend(_flatten(value, new_key, sep=sep).items())
         else:
-            items.append((new_key, v))
+            items.append((new_key, value))
     return dict(items)
 
 
@@ -634,3 +642,273 @@ def _format_technical_details(metadata: list = None) -> list:
         formatted_metadata.append(array_item)
 
     return formatted_metadata
+
+
+def _build_metadata_score(
+    dataset: dict = None, structural_metadata: list = None, publisher: dict = None
+) -> dict:
+    """
+    Build the metadata quality score of the dataset.
+    """
+    weights = _get_weights()
+
+    total_count = 0
+    total_weight = 0
+
+    for key, value in weights.items():
+
+        parent_key = key.split(".", maxsplit=1)[0]
+
+        sub_key = ""
+        if len(key.split(".", maxsplit=1)) > 1:
+            sub_key = key.split(".")[1]
+
+        if parent_key == "structuralMetadata":
+            if sub_key == "dataClassesCount":
+                if len(structural_metadata) > 0:
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "tableName":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(lambda x: x.get("tableName", ""), structural_metadata)
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "tableDescription":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("tableDescription", ""), structural_metadata
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "columnName":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(lambda x: x.get("columnName", ""), structural_metadata)
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "columnDescription":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("columnDescription", ""),
+                            structural_metadata,
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "dataType":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(lambda x: x.get("dataType", ""), structural_metadata)
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "sensitive":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(lambda x: x.get("sensitive", ""), structural_metadata)
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+        elif parent_key == "observation":
+            if sub_key == "observedNode":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("observedNode", ""),
+                            dataset.get("observations", []),
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "measuredValue":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("measuredValue", ""),
+                            dataset.get("observations", []),
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "disambiguatingDescription":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("disambiguatingDescription", ""),
+                            dataset.get("observations", []),
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "observationDate":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("observationDate", ""),
+                            dataset.get("observations", []),
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+            if sub_key == "measuredProperty":
+                if any(
+                    x != ""
+                    for x in list(
+                        map(
+                            lambda x: x.get("measuredProperty", ""),
+                            dataset.get("observations", []),
+                        )
+                    )
+                ):
+                    total_count += 1
+                    total_weight += value
+        else:
+            flattened_dataset = _flatten(dataset, sep=".")
+
+            dataset_value = flattened_dataset.get("key", "")
+
+            if isinstance(dataset_value, list):
+                if len(dataset_value) > 0:
+                    total_count += 1
+                    total_weight += value
+            elif isinstance(dataset_value, dict):
+                if dataset_value:
+                    total_count += 1
+                    total_weight += value
+            else:
+                if dataset_value != "":
+                    total_count += 1
+                    total_weight += value
+
+    metadata_quality = {
+        "schema_version": "",
+        "pid": dataset.get("identifier", ""),
+        "id": "",
+        "publisher": publisher.get("name", ""),
+        "title": dataset["summary"]["title"],
+        "weighted_quality_rating": "Not Rated",
+        "weighted_quality_score": 0,
+        "weighted_completeness_percent": 0,
+        "weighted_error_percent": 0,
+    }
+
+    metadata_quality["weighted_completeness_percent"] = str(
+        round(100 * total_weight, 2)
+    )
+    # Dataset would not reach here if there were errors, hence error percent assumed 0
+    metadata_quality["weighted_error_percent"] = str(0)
+
+    metadata_quality["weighted_quality_score"] = str(round(50 * (total_weight + 1), 2))
+
+    quality_rating = "Not Rated"
+    if (
+        float(metadata_quality["weighted_quality_score"]) > 60
+        and float(metadata_quality["weighted_quality_score"]) < 70
+    ):
+        quality_rating = "Bronze"
+    if (
+        float(metadata_quality["weighted_quality_score"]) > 70
+        and float(metadata_quality["weighted_quality_score"]) < 80
+    ):
+        quality_rating = "Silver"
+    if (
+        float(metadata_quality["weighted_quality_score"]) > 80
+        and float(metadata_quality["weighted_quality_score"]) < 90
+    ):
+        quality_rating = "Gold"
+    if float(metadata_quality["weighted_quality_score"]) > 90:
+        quality_rating = "Platinum"
+
+    metadata_quality["weighted_quality_rating"] = quality_rating
+
+    return metadata_quality
+
+
+def _get_weights() -> dict:
+    """
+    INTERNAL: get the weights with pre-defined scores.
+    """
+    return {
+        "identifier": 0.026845638,
+        "summary.title": 0.026845638,
+        "summary.abstract": 0.026845638,
+        "summary.contactPoint": 0.026845638,
+        "summary.keywords": 0.026845638,
+        "summary.doiName": 0.026845638,
+        "summary.publisher.name": 0.026845638,
+        "summary.publisher.contactPoint": 0.0,
+        "summary.publisher.memberOf": 0.006711409,
+        "documentation.description": 0.026845638,
+        "documentation.associatedMedia": 0.0,
+        "documentation.isPartOf": 0.0,
+        "coverage.spatial": 0.026845638,
+        "coverage.typicalAgeRange": 0.026845638,
+        "coverage.physicalSampleAvailability": 0.026845638,
+        "coverage.followup": 0.006711409,
+        "coverage.pathway": 0.006711409,
+        "provenance.origin.purpose": 0.006711409,
+        "provenance.origin.source": 0.006711409,
+        "provenance.origin.collectionSituation": 0.006711409,
+        "provenance.temporal.accrualPeriodicity": 0.026845638,
+        "provenance.temporal.distributionReleaseDate": 0.0,
+        "provenance.temporal.startDate": 0.026845638,
+        "provenance.temporal.endDate": 0.0,
+        "provenance.temporal.timeLag": 0.006711409,
+        "accessibility.usage.dataUseLimitation": 0.026845638,
+        "accessibility.usage.dataUseRequirements": 0.026845638,
+        "accessibility.usage.resourceCreator": 0.026845638,
+        "accessibility.usage.investigations": 0.006711409,
+        "accessibility.usage.isReferencedBy": 0.006711409,
+        "accessibility.access.accessRights": 0.026845638,
+        "accessibility.access.accessService": 0.006711409,
+        "accessibility.access.accessRequestCost": 0.026845638,
+        "accessibility.access.deliveryLeadTime": 0.026845638,
+        "accessibility.access.jurisdiction": 0.026845638,
+        "accessibility.access.dataController": 0.026845638,
+        "accessibility.access.dataProcessor": 0.0,
+        "accessibility.formatAndStandards.vocabularyEncodingScheme": 0.026845638,
+        "accessibility.formatAndStandards.conformsTo": 0.026845638,
+        "accessibility.formatAndStandards.language": 0.026845638,
+        "accessibility.formatAndStandards.format": 0.026845638,
+        "enrichmentAndLinkage.qualifiedRelation": 0.006711409,
+        "enrichmentAndLinkage.derivation": 0.006711409,
+        "enrichmentAndLinkage.tools": 0.006711409,
+        "observation.observedNode": 0.026845638,
+        "observation.measuredValue": 0.026845638,
+        "observation.disambiguatingDescription": 0.0,
+        "observation.observationDate": 0.0,
+        "observation.measuredProperty": 0.0,
+        "structuralMetadata.dataClassesCount": 0.026845638,
+        "structuralMetadata.tableName": 0.026845638,
+        "structuralMetadata.tableDescription": 0.026845638,
+        "structuralMetadata.columnName": 0.026845638,
+        "structuralMetadata.columnDescription": 0.026845638,
+        "structuralMetadata.dataType": 0.026845638,
+        "structuralMetadata.sensitive": 0.026845638,
+    }
