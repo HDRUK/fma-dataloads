@@ -78,7 +78,7 @@ def test_archive_gateway_datasets(initialise_db):
     """
     db = initialise_db
 
-    archive_gateway_datasets(db, [{"pid": "pid2"}])
+    archive_gateway_datasets(db, [{"pid": "pid2"}], [])
 
     archived_dataset = db.tools.find_one({"pid": "pid2"})
 
@@ -90,7 +90,7 @@ def test_archive_gateway_datasets__raise_exception():
     Function should raise exception if error encountered.
     """
     try:
-        archive_gateway_datasets("badDB", [])
+        archive_gateway_datasets("badDB", [], [])
     except Exception as error:
         assert error is not None
 

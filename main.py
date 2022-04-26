@@ -261,10 +261,8 @@ def main(custodian_id: str) -> None:
         if len([*archived_datasets, *previous_version_datasets]) > 0:
             archive_gateway_datasets(
                 db=db,
-                archived_datasets=[
-                    *archived_datasets,
-                    *previous_version_datasets,
-                ],
+                archived_datasets=archived_datasets,
+                previous_versions=previous_version_datasets,
             )
 
         if len([*new_valid_datasets, *updated_valid_datasets]) > 0:

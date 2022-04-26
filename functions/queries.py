@@ -47,16 +47,31 @@ def get_latest_gateway_dataset(
 
 
 def archive_gateway_datasets(
-    db: pymongo.database.Database = None, archived_datasets: np.array = None
+    db: pymongo.database.Database = None,
+    archived_datasets: np.array = None,
+    previous_versions: list = None,
 ) -> None:
     """
     Archive datasets on the Gateway given a list of datasets (which are then mapped to IDs).
     """
     try:
         db.tools.update_many(
-            {"pid": {"$in": list(map(lambda x: x["pid"], archived_datasets))}},
+            {
+                "pid": {
+                    "$in": list(
+                        map(
+                            lambda x: x["pid"], [*archived_datasets, *previous_versions]
+                        )
+                    )
+                }
+            },
             {"$set": {"activeflag": "archive"}},
         )
+
+        if len(archived_datasets) > 0:
+            db.sync_status.delete_many(
+                {"pid": {"$in": list(map(lambda x: x["pid"], archived_datasets))}}
+            )
     except Exception as error:
         raise CriticalError(
             f"Error archiving datasets on the Gateway: {error}"
