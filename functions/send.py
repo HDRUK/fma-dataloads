@@ -321,7 +321,7 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
             pdf.multi_cell(
                 0,
                 5,
-                txt=f'{"/".join(j["path"])}: {str(j["error"])}',
+                txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
             )
 
     return pdf.output(dest="S").encode("latin-1")

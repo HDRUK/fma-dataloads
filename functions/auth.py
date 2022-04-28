@@ -29,9 +29,9 @@ def get_access_token(
     if post.status_code == 200:
         return post.json()["access_token"]
 
-    if post.status_code == 401 or post.status_code == 403:
+    if post.status_code in [400, 401, 403]:
         raise AuthError(
-            f"Authorisation error: unauthorised {post.status_code} error was received from {token_url}",
+            f"Authorisation error: {post.status_code} error was received from {token_url}",
             url=token_url,
         )
 

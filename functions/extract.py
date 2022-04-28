@@ -44,7 +44,7 @@ def get_dataset(url: str = "", auth_token: str = "", dataset_id: str = ""):
         data = response.json()
         return data
 
-    if response.status_code == 401 or response.status_code == 403:
+    if response.status_code in [401, 403]:
         raise AuthError(
             f"Authorisation error: unauthorised {response.status_code} error was received from {url}",
             url=url,
