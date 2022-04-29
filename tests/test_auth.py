@@ -55,7 +55,7 @@ def test_get_access_token__401():
     except Exception as error:
         assert (
             str(error)
-            == f"Authorisation error: unauthorised 401 error was received from {token_url}"
+            == f"Authorisation error: 401 error was received from {token_url}"
         )
 
 
@@ -79,5 +79,5 @@ def test_get_access_token__403():
     except Exception as error:
         assert (
             str(error)
-            == f"Authorisation error: unauthorised 403 error was received from {token_url}"
+            == f"Authorisation error: 403 error was received from {token_url}"
         )
