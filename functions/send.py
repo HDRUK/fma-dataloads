@@ -204,10 +204,9 @@ def _send_mail(
     send_grid = sendgrid.SendGridAPIClient(api_key=os.environ.get("SENDGRID_API_KEY"))
     email_body = _get_header() + message + _get_footer()
     content = Content("text/html", email_body)
-    email_to = [To(email_to)]
 
     if admin_email:
-        email_to.append(To(admin_email))
+        email_to.append(admin_email)
 
     mail = Mail(
         Email(os.getenv("EMAIL_SENDER")),
