@@ -186,6 +186,7 @@ def transform_dataset(
             ["accessibility", "usage", "dataUseLimitation"],
             ["accessibility", "usage", "dataUseRequirements"],
             ["accessibility", "usage", "investigations"],
+            ["accessibility", "formatAndStandards", "vocabularyEncodingScheme"],
             ["accessibility", "formatAndStandards", "conformsTo"],
             ["accessibility", "formatAndStandards", "language"],
             ["accessibility", "formatAndStandards", "format"],
