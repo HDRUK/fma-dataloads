@@ -133,7 +133,7 @@ def transform_dataset(
                 "phenotypes": [],
             },
             "datasetid": str(uuid.uuid4()),
-            "questionAnswers": json.dumps(_generate_question_answers(dataset)),
+            "questionAnswers": "",
             "activeflag": "inReview",
             "is5Safes": True if publisher["uses5Safes"] else False,
             "structuralMetadata": [],
@@ -169,6 +169,43 @@ def transform_dataset(
                 formatted_dataset["datasetv2"]["structuralMetadata"]
             )
 
+        # Necessary to convert csv fields to an array for FE
+        csv_field_paths = [
+            ["coverage", "spatial"],
+            ["coverage", "physicalSampleAvailability"],
+            ["provenance", "origin", "purpose"],
+            ["provenance", "origin", "source"],
+            ["provenance", "origin", "collectionSituation"],
+            ["summary", "keywords"],
+            ["summary", "alternateIdentifiers"],
+            ["summary", "publisher", "dataUseLimitation"],
+            ["summary", "publisher", "dataUseRequirements"],
+            ["documentation", "associatedMedia"],
+            ["documentation", "isPartOf"],
+            ["accessibility", "usage", "dataUseLimitation"],
+            ["accessibility", "usage", "dataUseRequirements"],
+            ["accessibility", "usage", "investigations"],
+            ["accessibility", "formatAndStandards", "conformsTo"],
+            ["accessibility", "formatAndStandards", "language"],
+            ["accessibility", "formatAndStandards", "format"],
+            ["enrichmentAndLinkage", "qualifiedRelation"],
+            ["enrichmentAndLinkage", "derivation"],
+            ["enrichmentAndLinkage", "tools"],
+        ]
+
+        for i in csv_field_paths:
+            if len(i) == 2:
+                if isinstance(formatted_dataset["datasetv2"][i[0]][i[1]], str):
+                    formatted_dataset["datasetv2"][i[0]][i[1]] = formatted_dataset[
+                        "datasetv2"
+                    ][i[0]][i[1]].split(",")
+
+            if len(i) == 3:
+                if isinstance(formatted_dataset["datasetv2"][i[0]][i[1]][i[2]], str):
+                    formatted_dataset["datasetv2"][i[0]][i[1]][
+                        i[2]
+                    ] = formatted_dataset["datasetv2"][i[0]][i[1]][i[2]].split(",")
+
         metadata_quality = _build_metadata_score(
             dataset=dataset,
             structural_metadata=formatted_dataset["structuralMetadata"],
@@ -176,6 +213,10 @@ def transform_dataset(
         )
 
         formatted_dataset["datasetfields"]["metadataquality"] = metadata_quality
+
+        formatted_dataset["questionAnswers"] = json.dumps(
+            _generate_question_answers(dataset)
+        )
 
         return formatted_dataset
 
