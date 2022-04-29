@@ -170,7 +170,7 @@ def transform_dataset(
                     formatted_dataset["datasetv2"]["structuralMetadata"]
                 )
 
-        # Necessary to convert csv or strings fields to an array for FE requirements
+        # Necessary to convert csv or string fields to an array for FE requirements
         csv_or_string_field_paths = [
             ["coverage", "spatial"],
             ["coverage", "physicalSampleAvailability"],
