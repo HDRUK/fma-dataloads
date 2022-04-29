@@ -159,15 +159,16 @@ def transform_dataset(
             formatted_dataset["activeflag"] = "active"
             formatted_dataset["timestamps"]["published"] = datetime.now()
 
-        if len(dataset["structuralMetadata"]) > 0:
-            formatted_dataset["structuralMetadata"] = _format_structural_metadata(
-                formatted_dataset["datasetv2"]["structuralMetadata"]
-            )
-            formatted_dataset["datasetfields"][
-                "technicaldetails"
-            ] = _format_technical_details(
-                formatted_dataset["datasetv2"]["structuralMetadata"]
-            )
+        if _keys_exist(dataset, "structuralMetadata"):
+            if len(dataset["structuralMetadata"]) > 0:
+                formatted_dataset["structuralMetadata"] = _format_structural_metadata(
+                    formatted_dataset["datasetv2"]["structuralMetadata"]
+                )
+                formatted_dataset["datasetfields"][
+                    "technicaldetails"
+                ] = _format_technical_details(
+                    formatted_dataset["datasetv2"]["structuralMetadata"]
+                )
 
         # Necessary to convert csv fields to an array for FE
         csv_field_paths = [
