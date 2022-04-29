@@ -170,8 +170,8 @@ def transform_dataset(
                     formatted_dataset["datasetv2"]["structuralMetadata"]
                 )
 
-        # Necessary to convert csv fields to an array for FE
-        csv_field_paths = [
+        # Necessary to convert csv or strings fields to an array for FE requirements
+        csv_or_string_field_paths = [
             ["coverage", "spatial"],
             ["coverage", "physicalSampleAvailability"],
             ["provenance", "origin", "purpose"],
@@ -186,6 +186,9 @@ def transform_dataset(
             ["accessibility", "usage", "dataUseLimitation"],
             ["accessibility", "usage", "dataUseRequirements"],
             ["accessibility", "usage", "investigations"],
+            ["accessibility", "access", "accessRights"],
+            ["accessibility", "access", "accessRequestCost"],
+            ["accessibility", "access", "jurisdiction"],
             ["accessibility", "formatAndStandards", "vocabularyEncodingScheme"],
             ["accessibility", "formatAndStandards", "conformsTo"],
             ["accessibility", "formatAndStandards", "language"],
@@ -195,7 +198,7 @@ def transform_dataset(
             ["enrichmentAndLinkage", "tools"],
         ]
 
-        for i in csv_field_paths:
+        for i in csv_or_string_field_paths:
             if len(i) == 2:
                 if isinstance(formatted_dataset["datasetv2"][i[0]][i[1]], str):
                     formatted_dataset["datasetv2"][i[0]][i[1]] = formatted_dataset[
