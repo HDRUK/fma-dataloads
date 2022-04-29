@@ -180,7 +180,7 @@ def transform_dataset(
         return formatted_dataset
 
     except KeyError as error:
-        raise CriticalError(f"Key error when tranforming dataset: {error}") from error
+        raise CriticalError(f"Key error when transforming dataset: {error}") from error
     except Exception as error:
         raise CriticalError(
             f"Unknown error when tranforming dataset: {error}"
@@ -606,9 +606,9 @@ def _format_structural_metadata(metadata: list = None) -> list:
             formatted_metadata.append(
                 {
                     "tableName": i["name"],
-                    "tableDescription": i["description"],
+                    "tableDescription": i.get("description", ""),
                     "columnName": j["name"],
-                    "columnDescription": j["description"],
+                    "columnDescription": j.get("description", ""),
                     "dataType": j["dataType"],
                     "sensitive": j["sensitive"],
                 }
@@ -626,7 +626,7 @@ def _format_technical_details(metadata: list = None) -> list:
     for i in metadata:
         array_item = {
             "label": i["name"],
-            "description": i["description"],
+            "description": i.get("description", ""),
             "domainType": "DataClass",
             "elements": [],
         }
@@ -634,7 +634,7 @@ def _format_technical_details(metadata: list = None) -> list:
             array_item["elements"].append(
                 {
                     "label": j["name"],
-                    "description": j["description"],
+                    "description": j.get("description", ""),
                     "domainType": "DataElement",
                     "dataType": {"label": j["dataType"], "domainType": "PrimitiveType"},
                 }
