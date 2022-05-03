@@ -1,4 +1,5 @@
 import os
+import time
 import http
 import base64
 import logging
@@ -48,6 +49,8 @@ def main(custodian_id: str) -> None:
         datasets with Gateway sync collection for updates, new and archived datasets and
         modify the Gateway database accordingly.
     """
+    start_time = time.time()
+
     try:
         ##########################################
         # GET publisher details
@@ -330,3 +333,4 @@ def main(custodian_id: str) -> None:
 
     else:
         logging.info(f"FMA ingestion for {custodian_name} completed")
+        logging.info(f"Run time: {round(time.time()-start_time, 3)} seconds")
