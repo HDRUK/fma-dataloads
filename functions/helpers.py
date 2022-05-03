@@ -431,7 +431,7 @@ def _generate_question_answers(dataset: dict = None) -> dict:
         ] = dataset["accessibility"]["formatAndStandards"]["format"]
 
     # Enrichment and linkage
-    if _keys_exist(dataset, "enrichmentAndLinkages", "qualifiedRelation"):
+    if _keys_exist(dataset, "enrichmentAndLinkage", "qualifiedRelation"):
         question_answers["properties/enrichmentAndLinkage/qualifiedRelation"] = dataset[
             "enrichmentAndLinkage"
         ]["qualifiedRelation"]
