@@ -33,7 +33,7 @@ A path to an authorised GCP service account credentials must also be in the envi
 
 ### Run
 
-The ETL ingestion procedure is triggered by a HTTP request (for example, from Cloud Scheduler). This request triggers the ingestion process and returns a 200 - OK status to acknowledge receipt of the request.
+The ETL ingestion procedure is triggered by a HTTP request (for example, from Cloud Scheduler). This request triggers and runs the ingestion process and returns a 200 - OK status to acknowledge completion of the request.
 
 To run this application:
 
@@ -57,5 +57,3 @@ POST http://[host:port]
 Reponses:
     200 - ok
 ```
-
-The server will respond 200 if the HTTP trigger is successful. The request endpoint is configured as a trigger (i.e., akin to a cloud function) and will start the ingestion sctipt asynchronously and respond 200 immediately to acknowledge receipt of the request. No HTTP response is given by the actual ingestion procedure.
