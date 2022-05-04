@@ -4,7 +4,6 @@ import http
 import base64
 import logging
 
-from threading import Thread
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from flask import Flask, request, Response
@@ -21,23 +20,7 @@ db = client[os.getenv("MONGO_DATABASE")]
 
 
 @app.route("/", methods=["POST"])
-def trigger() -> Response:
-    """
-    HTTP trigger for Cloud Scheduler.
-
-    Description:
-        HTTP request starts ingestion procedure on a new thread asynchronously
-        and responds 200 OK.
-    """
-    request_data = request.get_json()
-    custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
-
-    Thread(target=main, args=(custodian_id,)).start()
-
-    return ("", http.HTTPStatus.OK)
-
-
-def main(custodian_id: str) -> None:
+def main() -> Response:
     """
     Sync metadata for a given publisher/custodian catalogue.
 
@@ -49,6 +32,8 @@ def main(custodian_id: str) -> None:
         datasets with Gateway sync collection for updates, new and archived datasets and
         modify the Gateway database accordingly.
     """
+    request_data = request.get_json()
+    custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
     start_time = time.time()
 
     try:
@@ -334,3 +319,4 @@ def main(custodian_id: str) -> None:
     else:
         logging.info(f"FMA ingestion for {custodian_name} completed")
         logging.info(f"Run time: {round(time.time()-start_time, 3)} seconds")
+        return ("", http.HTTPStatus.OK)
