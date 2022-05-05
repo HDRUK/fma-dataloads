@@ -20,7 +20,22 @@ db = client[os.getenv("MONGO_DATABASE")]
 
 
 @app.route("/", methods=["POST"])
-def main() -> Response:
+def trigger() -> Response:
+    """
+    HTTP wrapper for Cloud Scheduler.
+
+    Description:
+        HTTP request starts ingestion procedure and responds 200 OK.
+    """
+    request_data = request.get_json()
+    custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
+
+    main(custodian_id=custodian_id)
+
+    return ("", http.HTTPStatus.OK)
+
+
+def main(custodian_id: str) -> None:
     """
     Sync metadata for a given publisher/custodian catalogue.
 
@@ -32,8 +47,6 @@ def main() -> Response:
         datasets with Gateway sync collection for updates, new and archived datasets and
         modify the Gateway database accordingly.
     """
-    request_data = request.get_json()
-    custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
     start_time = time.time()
 
     try:
@@ -318,5 +331,4 @@ def main() -> Response:
 
     else:
         logging.info(f"FMA ingestion for {custodian_name} completed")
-        logging.info(f"Run time: {round(time.time()-start_time, 3)} seconds")
-        return ("", http.HTTPStatus.OK)
+        logging.info(f"Run time: {round(time.time()-start_time, 2)} seconds")
