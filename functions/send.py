@@ -39,21 +39,22 @@ def send_summary_mail(
 
     message += f"""<tr style="text-align: left;"><th style="font-weight: normal;">Ingestion of dataset metadata for {publisher["publisherDetails"]["name"]} from 
         {publisher["federation"]["endpoints"]["baseURL"]} ran without any critical errors. A summary of the results of the 
-        action are listed below{"." if len(failed_validation) == 0 else ", and more detailed logs are included in the attached pdf."}
+        action are listed below{'.' if len(failed_validation) == 0 else ', and more detailed logs are included in the attached pdf.'}
         </th></tr><tr></tr>
         """
 
     if len(new_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">New datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">New dataset(s): </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
-            {len(new_datasets)} new dataset(s) were successfully ingested from your catalogue, they are now pending our internal review.
-            If approved, they will become live on the Innovation Gateway - and any further updates made in your catalogue will be
-            fetched nightly. If any of these datasets are rejected in our internal review, we will pause syncing of that dataset until
-            the issue is resolved.
+            {len(new_datasets)} new dataset(s) {'was' if len(new_datasets) == 1 else 'were'} successfully ingested from your catalogue, 
+            {'it is' if len(new_datasets) == 1 else 'they are'} now pending our internal review. If approved, {'it' if len(new_datasets) == 1 else 'they'} will 
+            become live on the Innovation Gateway - and any further updates made in your catalogue will be fetched nightly. If {'this' if len(new_datasets) == 1 else 'any of these'} 
+            dataset(s) {'is' if len(new_datasets) == 1 else 'are'} rejected in our internal review, we will pause syncing of {'this' if len(new_datasets) == 1 else 'that'} 
+            dataset(s) until the issue is resolved.
                     
             <p></p>
                         
-            The new datasets are as follows:
+            The new dataset(s) {'is' if len(new_datasets) == 1 else 'are'} as follows:
             </th></tr>
             """
         message += _format_html_list(
@@ -62,14 +63,15 @@ def send_summary_mail(
         )
 
     if len(updated_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Updated datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Updated dataset(s): </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
             Updated information was found for {len(updated_datasets)} existing dataset(s) in your catalogue, 
-            the entries on the Innovation Gateway have been updated accordingly
+            the {'entry' if len(updated_datasets) == 1 else 'entries'} on the Innovation Gateway {'has' if len(updated_datasets) == 1 else 'have'} 
+            been updated accordingly.
                     
             <p></p>
                             
-            The datasets that have been updated are as follows:
+            The dataset(s) that {'has' if len(updated_datasets) == 1 else 'have'} been updated {'is' if len(updated_datasets) == 1 else 'are'} as follows:
             </th></tr>
             """
         message += _format_html_list(
@@ -78,14 +80,15 @@ def send_summary_mail(
         )
 
     if len(archived_datasets) > 0:
-        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Archived datasets: </th></tr>"""
+        message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Archived dataset(s): </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
-            {len(archived_datasets)} datasets were previously ingested from your metadata catalogue, but were not found on this run - these 
-            datasets have been archived on the Innovation Gateway and are no longer discoverable to those without a direct url.
+            {len(archived_datasets)} dataset(s) {'was' if len(archived_datasets) == 1 else 'were'} previously ingested from your metadata catalogue, 
+            but {'was' if len(archived_datasets) == 1 else 'were'} not found on this run - {'this dataset(s) has' if len(archived_datasets) == 1 else 'these dataset(s) have'}
+            been archived on the Innovation Gateway and {'is' if len(archived_datasets) == 1 else 'are'} no longer discoverable to those without a direct url.
                     
             <p></p>
                         
-            The datasets that have been archived are as follows:
+            The dataset(s) that {'has' if len(archived_datasets) == 1 else 'have'} been archived {'is' if len(archived_datasets) == 1 else 'are'} as follows:
             </th></tr>
             """
         message += _format_html_list(
@@ -99,13 +102,14 @@ def send_summary_mail(
 
         message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Failed validation/unsupported version: </th></tr>"""
         message += f"""<tr><th style="border: 0; font-size: 14px; text-align: left; font-weight: normal">
-            {len([*unsupported_version_datasets, *failed_validation])} datasets failed validation against our metadata schema, please ensure that all 
+            {len([*unsupported_version_datasets, *failed_validation])} dataset(s) failed validation against our metadata schema, please ensure that all 
             metadata exposed through the endpoint is conformant to our schema (https://github.com/HDRUK/schemata). We support ingestion of datasets which 
-            pass validation against versions 2.0.2 and 2.1 of the schema{"." if len(failed_validation) == 0 else ". Further error logs are in the attached pdf."}
+            pass validation against versions 2.0.2 and 2.1 of the schema{'.' if len(failed_validation) == 0 else '. Further error logs are in the attached pdf.'}
                     
             <p></p>
                         
-            The datasets that have failed validation are as follows:
+            The dataset(s) that {'failed' if len([*unsupported_version_datasets, *failed_validation]) ==  1 else 'have failed'} validation 
+            {'is' if len([*unsupported_version_datasets, *failed_validation]) == 1 else 'are'} as follows:
             </th></tr>
             """
         message += _format_html_list(
