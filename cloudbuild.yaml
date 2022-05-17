@@ -19,7 +19,7 @@ steps:
       [
         'run',
         'deploy',
-        '${_ENVIRONMENT}-fma',å
+        '${_ENVIRONMENT}-fma',
         '--image',
         'gcr.io/$PROJECT_ID/${_APP_NAME}:${_ENVIRONMENT}',
         '--platform',
