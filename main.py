@@ -73,7 +73,7 @@ def main(custodian_id: str) -> None:
         # GET datasets from custodian and gateway
         ##########################################
 
-        auth_token = ""
+        headers = {}
 
         secret_name = publisher["federation"]["auth"]["secretKey"]
 
@@ -92,13 +92,15 @@ def main(custodian_id: str) -> None:
                 secrets["client_id"],
                 secrets["client_secret"],
             )
-            auth_token = f"Bearer {access_token}"
-            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
+            headers = {"Authorization": f"Bearer {access_token}"}
+            custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
         elif publisher["federation"]["auth"]["type"] == "api_key":
             secrets = get_client_secret(secret_name=secret_name)
-            auth_token = f"Basic {secrets['api_key']}"
-            custodian_datasets = get_datasets(custodian_datasets_url, auth_token)
+            headers = {
+                "apikey": secrets["api_key"],
+            }
+            custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
         else:
             custodian_datasets = get_datasets(custodian_datasets_url)
@@ -131,7 +133,7 @@ def main(custodian_id: str) -> None:
         for i in new_datasets:
             try:
                 dataset = get_dataset(
-                    custodian_datasets_url, auth_token, i["persistentId"]
+                    custodian_datasets_url, headers, i["persistentId"]
                 )
             except RequestError as error:
                 # Fetching single dataset failed - update sync status
@@ -199,7 +201,7 @@ def main(custodian_id: str) -> None:
                 try:
                     new_datasetv2 = get_dataset(
                         custodian_datasets_url,
-                        auth_token,
+                        headers,
                         custodian_version["persistentId"],
                     )
                 except RequestError as error:

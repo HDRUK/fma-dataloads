@@ -11,7 +11,7 @@ def test_get_datasets__200():
     Function should return list of datasets if status code == 200.
     """
     datasets_url = "http://custodian/datasets"
-    auth_token = "testAuthJWT"
+    headers = {"Authorization": "testAuthJWT"}
 
     responses.add(
         responses.GET,
@@ -21,13 +21,13 @@ def test_get_datasets__200():
         match=[
             matchers.header_matcher(
                 {
-                    "Authorization": auth_token,
+                    "Authorization": "testAuthJWT",
                 }
             )
         ],
     )
 
-    datasets = get_datasets(datasets_url, auth_token)
+    datasets = get_datasets(datasets_url, headers)
 
     assert datasets == []
 
@@ -38,7 +38,7 @@ def test_get_datasets__401():
     Function should raise Exception if status code != 200.
     """
     datasets_url = "http://custodian/datasets"
-    auth_token = "invalidAuthJWT"
+    headers = {"Authorization": "invalidAuthJWT"}
 
     responses.add(
         responses.GET,
@@ -47,7 +47,7 @@ def test_get_datasets__401():
     )
 
     try:
-        get_datasets(datasets_url, auth_token)
+        get_datasets(datasets_url, headers)
     except Exception as error:
         assert (
             str(error)
@@ -61,7 +61,7 @@ def test_get_datasets__403():
     Function should raise Exception if status code != 200.
     """
     datasets_url = "http://custodian/datasets"
-    auth_token = "invalidAuthJWT"
+    headers = {"Authorization": "invalidAuthJWT"}
 
     responses.add(
         responses.GET,
@@ -70,7 +70,7 @@ def test_get_datasets__403():
     )
 
     try:
-        get_datasets(datasets_url, auth_token)
+        get_datasets(datasets_url, headers)
     except Exception as error:
         assert (
             str(error)
@@ -84,7 +84,7 @@ def test_get_dataset__200():
     Function should return single dataset if status code == 200.
     """
     dataset_url = "http://custodian/datasets"
-    auth_token = "testAuthJWT"
+    headers = {"Authorization": "testAuthJWT"}
     dataset_id = "abc"
 
     responses.add(
@@ -95,13 +95,13 @@ def test_get_dataset__200():
         match=[
             matchers.header_matcher(
                 {
-                    "Authorization": auth_token,
+                    "Authorization": "testAuthJWT",
                 }
             ),
         ],
     )
 
-    datasets = get_dataset(dataset_url, auth_token, dataset_id)
+    datasets = get_dataset(dataset_url, headers, dataset_id)
 
     assert datasets == {}
 
@@ -112,7 +112,7 @@ def test_get_dataset__401():
     Function should raise Exception if status code != 200.
     """
     dataset_url = "http://custodian/datasets"
-    auth_token = "testAuthJWT"
+    headers = {"Authorization": "testAuthJWT"}
     dataset_id = "abc"
 
     responses.add(
@@ -122,7 +122,7 @@ def test_get_dataset__401():
     )
 
     try:
-        get_dataset(dataset_url, auth_token, dataset_id)
+        get_dataset(dataset_url, headers, dataset_id)
     except Exception as error:
         assert (
             str(error)
@@ -136,7 +136,7 @@ def test_get_dataset__403():
     Function should raise Exception if status code != 200.
     """
     dataset_url = "http://custodian/datasets"
-    auth_token = "testAuthJWT"
+    headers = {"Authorization": "testAuthJWT"}
     dataset_id = "abc"
 
     responses.add(
@@ -146,7 +146,7 @@ def test_get_dataset__403():
     )
 
     try:
-        get_dataset(dataset_url, auth_token, dataset_id)
+        get_dataset(dataset_url, headers, dataset_id)
     except Exception as error:
         assert (
             str(error)
