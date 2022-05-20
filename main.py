@@ -25,12 +25,21 @@ def trigger() -> Response:
     HTTP wrapper for Cloud Scheduler.
 
     Description:
-        HTTP request starts ingestion procedure and responds 200 OK.
+        HTTP request runs ingestion procedure and responds 200 (SUCCESS) or 500 (ERROR).
     """
+    start_time = time.time()
+
     request_data = request.get_json()
     custodian_id = base64.b64decode(request_data["data"]).decode("utf-8")
 
-    main(custodian_id=custodian_id)
+    try:
+        main(custodian_id=custodian_id)
+    except Exception as error:
+        logging.critical(error)
+        return ("", http.HTTPStatus.INTERNAL_SERVER_ERROR)
+    else:
+        logging.info(f"FMA ingestion for {custodian_id} completed")
+        logging.info(f"Run time: {round(time.time()-start_time, 2)} seconds")
 
     return ("", http.HTTPStatus.OK)
 
@@ -47,8 +56,6 @@ def main(custodian_id: str) -> None:
         datasets with Gateway sync collection for updates, new and archived datasets and
         modify the Gateway database accordingly.
     """
-    start_time = time.time()
-
     try:
         ##########################################
         # GET publisher details
@@ -315,8 +322,6 @@ def main(custodian_id: str) -> None:
 
     except (CriticalError, RequestError, AuthError) as error:
         # Custom error raised, log error, send email if required, set federation.active to false
-        logging.critical(error)
-
         if error.__class__.__name__ == "AuthError":
             send_auth_error_mail(publisher=publisher, url=error.__url__())
 
@@ -324,11 +329,4 @@ def main(custodian_id: str) -> None:
             send_datasets_error_mail(publisher=publisher, url=error.__url__())
 
         update_publisher(db, status=False, custodian_id=custodian_id)
-
-    except Exception as error:
-        # Unknown exception raised, log error
-        logging.critical(error)
-
-    else:
-        logging.info(f"FMA ingestion for {custodian_name} completed")
-        logging.info(f"Run time: {round(time.time()-start_time, 2)} seconds")
+        raise
