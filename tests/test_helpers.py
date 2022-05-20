@@ -1,10 +1,10 @@
 from functions.helpers import *
 
 custodian_datasets = [
-    {"identifier": "xyz"},
-    {"identifier": "abc"},
-    {"identifier": "pqr"},
-    {"identifier": "mno"},
+    {"persistentId": "xyz"},
+    {"persistentId": "abc"},
+    {"persistentId": "pqr"},
+    {"persistentId": "mno"},
 ]
 gateway_datasets = [
     {"pid": "xyz"},
@@ -31,7 +31,7 @@ def test_datasets_to_add():
     datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
     assert len(datasets) == 1
-    assert datasets[0] == {"identifier": "mno"}
+    assert datasets[0] == {"persistentId": "mno"}
 
 
 def test_extract_overlapping_datasets():
@@ -43,9 +43,9 @@ def test_extract_overlapping_datasets():
     )
 
     expected_datasets_1 = [
-        {"identifier": "xyz"},
-        {"identifier": "abc"},
-        {"identifier": "pqr"},
+        {"persistentId": "xyz"},
+        {"persistentId": "abc"},
+        {"persistentId": "pqr"},
     ]
     expected_datasets_2 = [{"pid": "xyz"}, {"pid": "abc"}, {"pid": "pqr"}]
 

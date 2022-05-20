@@ -23,7 +23,7 @@ def datasets_to_archive(
     datasets_to_archive_ids = np.array(
         list(
             set(np.array(list(map(lambda x: x["pid"], gateway_datasets))))
-            - set(np.array(list(map(lambda x: x["identifier"], custodian_datasets))))
+            - set(np.array(list(map(lambda x: x["persistentId"], custodian_datasets))))
         )
     )
 
@@ -48,7 +48,7 @@ def extract_new_datasets(
     """
     new_datasets_ids = np.array(
         list(
-            set(np.array(list(map(lambda x: x["identifier"], custodian_datasets))))
+            set(np.array(list(map(lambda x: x["persistentId"], custodian_datasets))))
             - set(np.array(list(map(lambda x: x["pid"], gateway_datasets))))
         )
     )
@@ -57,7 +57,7 @@ def extract_new_datasets(
         return np.array(
             list(
                 filter(
-                    lambda x: x["identifier"] in new_datasets_ids,
+                    lambda x: x["persistentId"] in new_datasets_ids,
                     custodian_datasets,
                 )
             )
@@ -75,7 +75,7 @@ def extract_overlapping_datasets(
     overlapping_datasets_ids = np.array(
         list(
             set(
-                np.array(list(map(lambda x: x["identifier"], custodian_datasets)))
+                np.array(list(map(lambda x: x["persistentId"], custodian_datasets)))
             ).intersection(
                 set(np.array(list(map(lambda x: x["pid"], gateway_datasets))))
             )
@@ -243,7 +243,7 @@ def create_sync_array(
     version_key = "datasetVersion"
 
     if "pid" not in datasets[0].keys():
-        pid_key = "identifier"
+        pid_key = "persistentId"
 
     if "datasetVersion" not in datasets[0].keys():
         version_key = "version"
@@ -506,7 +506,7 @@ def _extract_datasets_by_id(datasets: list = None, ids: np.array = None) -> np.a
         return np.array(
             list(
                 filter(
-                    lambda x: x["identifier"] in ids,
+                    lambda x: x["persistentId"] in ids,
                     datasets,
                 )
             )

@@ -124,12 +124,12 @@ def main(custodian_id: str) -> None:
         for i in new_datasets:
             try:
                 dataset = get_dataset(
-                    custodian_datasets_url, auth_token, i["identifier"]
+                    custodian_datasets_url, auth_token, i["persistentId"]
                 )
             except RequestError as error:
                 # Fetching single dataset failed - update sync status
                 logging.error(
-                    f'Error retrieving new dataset {i["identifier"]}: {error}'
+                    f'Error retrieving new dataset {i["persistentId"]}: {error}'
                 )
 
                 sync_list.extend(
@@ -144,7 +144,7 @@ def main(custodian_id: str) -> None:
             validation_schema = i["@schema"] if "@schema" in i else ""
 
             if not verify_schema_version(validation_schema):
-                logging.warning(f'Schema not supported for dataset {i["identifier"]}')
+                logging.warning(f'Schema not supported for dataset {i["persistentId"]}')
 
                 sync_list.extend(
                     create_sync_array(
@@ -177,7 +177,7 @@ def main(custodian_id: str) -> None:
             for i in gateway_versions:
                 custodian_version = list(
                     filter(
-                        lambda x, pid=i["pid"]: x["identifier"] == pid,
+                        lambda x, pid=i["pid"]: x["persistentId"] == pid,
                         custodian_versions,
                     )
                 )[0]
@@ -193,12 +193,12 @@ def main(custodian_id: str) -> None:
                     new_datasetv2 = get_dataset(
                         custodian_datasets_url,
                         auth_token,
-                        custodian_version["identifier"],
+                        custodian_version["persistentId"],
                     )
                 except RequestError as error:
                     # Fetching single dataset failed - update sync status
                     logging.error(
-                        f'Error retrieving updated dataset {custodian_version["identifier"]}: {error}'
+                        f'Error retrieving updated dataset {custodian_version["persistentId"]}: {error}'
                     )
 
                     sync_list.extend(
@@ -218,7 +218,7 @@ def main(custodian_id: str) -> None:
 
                 if not verify_schema_version(validation_schema):
                     logging.warning(
-                        f'Schema not supported for dataset {custodian_version["identifier"]}'
+                        f'Schema not supported for dataset {custodian_version["persistentId"]}'
                     )
 
                     sync_list.extend(
