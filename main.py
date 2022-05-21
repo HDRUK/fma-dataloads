@@ -169,7 +169,9 @@ def main(custodian_id: str) -> None:
                 invalid_datasets.append(not_valid)
             else:
                 new_valid_datasets.append(
-                    transform_dataset(publisher=publisher, dataset=dataset)
+                    transform_dataset(
+                        publisher=publisher, dataset=dataset, pid=i["persistentId"]
+                    )
                 )
 
         ##########################################
@@ -249,7 +251,9 @@ def main(custodian_id: str) -> None:
                         # New dataset not in tools, exists in sync, but previously fetch_failed or validation_failed
                         new_valid_datasets.append(
                             transform_dataset(
-                                publisher=publisher, dataset=new_datasetv2
+                                publisher=publisher,
+                                dataset=new_datasetv2,
+                                pid=custodian_version["persistentId"],
                             )
                         )
                         continue
@@ -258,6 +262,7 @@ def main(custodian_id: str) -> None:
                         transform_dataset(
                             publisher=publisher,
                             dataset=new_datasetv2,
+                            pid=custodian_version["persistentId"],
                             previous_version=latest_dataset,
                         )
                     )

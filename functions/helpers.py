@@ -2,7 +2,6 @@
 Helper functions for comparing lists and transforming data.
 """
 
-import uuid
 import json
 import string
 import numpy as np
@@ -94,7 +93,10 @@ def extract_overlapping_datasets(
 
 
 def transform_dataset(
-    publisher: dict = None, dataset: dict = None, previous_version: dict = None
+    publisher: dict = None,
+    dataset: dict = None,
+    previous_version: dict = None,
+    pid: str = None,
 ) -> dict:
     """
     Given a datasetv2 format object, transform to the required Gateway format with a given activeflag.
@@ -107,7 +109,7 @@ def transform_dataset(
             "name": dataset["summary"]["title"],
             "datasetVersion": dataset["version"],
             "type": "dataset",
-            "pid": dataset["identifier"],
+            "pid": pid,
             "datasetfields": {
                 "publisher": dataset["summary"]["publisher"]["memberOf"]
                 + ">"
@@ -132,7 +134,7 @@ def transform_dataset(
                 "technicaldetails": [],
                 "phenotypes": [],
             },
-            "datasetid": str(uuid.uuid4()),
+            "datasetid": dataset["identifier"],
             "questionAnswers": "",
             "activeflag": "inReview",
             "is5Safes": True if publisher["uses5Safes"] else False,
