@@ -166,6 +166,7 @@ def main(custodian_id: str) -> None:
                 continue
 
             if not_valid := validate_json(validation_schema, dataset):
+                not_valid["persistentId"] = i["persistentId"]
                 invalid_datasets.append(not_valid)
             else:
                 new_valid_datasets.append(
@@ -243,6 +244,7 @@ def main(custodian_id: str) -> None:
                     continue
 
                 if not_valid := validate_json(validation_schema, new_datasetv2):
+                    not_valid["persistentId"] = custodian_version["persistentId"]
                     invalid_datasets.append(not_valid)
                 else:
                     latest_dataset = get_latest_gateway_dataset(db=db, pid=i["pid"])
