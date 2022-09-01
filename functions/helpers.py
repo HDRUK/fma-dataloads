@@ -104,6 +104,9 @@ def transform_dataset(
     try:
         dataset = _merge_dictionaries(dataset)
 
+        # Add publisher identifier to link dataset to Gateway team
+        dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
+
         formatted_dataset = {
             "datasetv2": dataset,
             "name": dataset["summary"]["title"],
