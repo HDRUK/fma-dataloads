@@ -44,5 +44,5 @@ def verify_schema_version(schema_url: str = "") -> bool:
     """
     Verify that the supplied schema is either 2.0.0, 2.0.2 or latest.
     """
-    allowed_versions = ["2.0.0", "2.0.2", "2.1"]
+    allowed_versions = ["2.0.0", "2.0.2", "2.1.0"]
     return bool(re.search("|".join(allowed_versions), schema_url))
