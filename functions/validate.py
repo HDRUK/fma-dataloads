@@ -42,7 +42,7 @@ def validate_json(schema_url: str = "", dataset: dict = None) -> None or dict:
 
 def verify_schema_version(schema_url: str = "") -> bool:
     """
-    Verify that the supplied schema is either 2.0.0, 2.0.2 or latest.
+    Verify that the supplied schema is either 2.0.0, 2.0.2, 2.1.0 or latest.
     """
-    allowed_versions = ["2.0.0", "2.0.2", "latest"]
+    allowed_versions = ["2.0.0", "2.0.2", "2.1.0", "latest"]
     return bool(re.search("|".join(allowed_versions), schema_url))
