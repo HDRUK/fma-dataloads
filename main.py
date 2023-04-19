@@ -104,9 +104,14 @@ def main(custodian_id: str) -> None:
 
         elif publisher["federation"]["auth"]["type"] == "bearer_token":
             secrets = get_client_secret(secret_name=secret_name)
+            print("BEARER ", secrets["bearer_token"])
             headers = {
-                "Authorization": "Bearer " + secrets["bearer_token"]
+                'Content-Type':'application/json',
+                'Authorization':'Bearer {}'.format(secrets["bearer_token"])
             }
+            print("HEADERS ", headers)
+            print("CUSTODIAN_DATASETS_URL ", custodian_datasets_url)
+
             custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
         else:
