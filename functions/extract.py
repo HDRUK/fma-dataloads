@@ -2,6 +2,8 @@
 Functions for retrieving datasets or a dataset from the target server.
 """
 
+import logging
+import json
 import requests
 
 from .exceptions import *
@@ -12,7 +14,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     GET: extract the list of datasets from the target server.
     """
     response = requests.get(url, headers=headers)
-
+    logging.info("FMA response ", json.dumps(response))
     if response.status_code == 200:
         data = response.json()
 

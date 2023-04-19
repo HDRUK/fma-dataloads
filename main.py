@@ -109,8 +109,6 @@ def main(custodian_id: str) -> None:
                 'Content-Type':'application/json',
                 'Authorization':'Bearer {}'.format(secrets["bearer_token"])
             }
-            logging.info("FMA ingestion - HEADERS ", json.dumps(headers))
-            logging.info("FMA ingestion - CUSTODIAN_DATASETS_URL ", custodian_datasets_url)
 
             custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
