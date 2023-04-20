@@ -11,8 +11,9 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
     GET: extract the list of datasets from the target server.
     """
+
     response = requests.get(url, headers=headers)
-    
+
     if response.status_code == 200:
         data = response.json()
 
@@ -34,7 +35,15 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     """
     GET: extract a single dataset from the target server.
     """
-    response = requests.get(url + "/" + str(dataset_id), headers=headers)
+
+    updated_url = ''
+
+    if url.find("?") != -1:
+        updated_url = url[:url.find("?")] + "/" + str(dataset_id) + url[url.find("?"):]
+    else:
+        updated_url = url + "/" + str(dataset_id)
+
+    response = requests.get(updated_url, headers=headers)
 
     if response.status_code == 200:
         data = response.json()
