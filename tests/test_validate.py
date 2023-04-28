@@ -21,7 +21,8 @@ def schema_urls():
     return {
         "2.0.0": "https://raw.githubusercontent.com/HDRUK/schemata/master/schema/dataset/2.0.0/dataset.schema.json",
         "2.0.2": "https://raw.githubusercontent.com/HDRUK/schemata/master/schema/dataset/2.0.2/dataset.schema.json",
-        "2.1.0": "https://raw.githubusercontent.com/HDRUK/schemata/master/schema/dataset/latest/dataset.schema.json",
+        "2.1.0": "https://raw.githubusercontent.com/HDRUK/schemata/master/schema/dataset/2.1.0/dataset.schema.json",
+        "latest": "https://raw.githubusercontent.com/HDRUK/schemata/master/schema/dataset/latest/dataset.schema.json",
     }
 
 
@@ -32,11 +33,13 @@ def test_verify_schema_version():
     schema_url_correct_1 = "http://abc/latest"
     schema_url_correct_2 = "http://abc/2.0.0"
     schema_url_correct_3 = "http://abc/2.0.2"
+    schema_url_correct_4 = "http://abc/2.1.0"
     schema_url_bad = "http://abc/not_a_real_schema"
 
     assert verify_schema_version(schema_url_correct_1)
     assert verify_schema_version(schema_url_correct_2)
     assert verify_schema_version(schema_url_correct_3)
+    assert verify_schema_version(schema_url_correct_4)
     assert not verify_schema_version(schema_url_bad)
 
 

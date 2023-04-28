@@ -6,6 +6,7 @@ import os
 import base64
 import sendgrid
 import datetime
+import logging
 
 from fpdf import FPDF
 from sendgrid.helpers.mail import *
@@ -234,7 +235,7 @@ def _send_mail(
     try:
         send_grid.client.mail.send.post(request_body=mail.get())
     except Exception as error:
-        print(f"Error sending emails: {error}")
+        logging.critical(error)
 
 
 def _format_html_list(datasets: list = None, key: str = "") -> str:

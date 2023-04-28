@@ -10,7 +10,6 @@ from flask import Flask, request, Response
 
 from functions import *
 
-
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
@@ -62,6 +61,7 @@ def main(custodian_id: str) -> None:
         ##########################################
 
         publisher = get_publisher(db=db, custodian_id=custodian_id)
+
         custodian_name = publisher["publisherDetails"]["name"]
 
         if not publisher["federation"]["active"]:
@@ -76,7 +76,6 @@ def main(custodian_id: str) -> None:
         headers = {}
 
         secret_name = publisher["federation"]["auth"]["secretKey"]
-
         custodian_datasets_url = (
             publisher["federation"]["endpoints"]["baseURL"]
             + publisher["federation"]["endpoints"]["datasets"]
@@ -107,7 +106,6 @@ def main(custodian_id: str) -> None:
             bearer_token = "Bearer " + secrets["bearer_token"]
             
             headers = {"Authorization": bearer_token }
-
             custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
         else:
@@ -143,6 +141,7 @@ def main(custodian_id: str) -> None:
                 dataset = get_dataset(
                     custodian_datasets_url, headers, i["persistentId"]
                 )
+
             except RequestError as error:
                 # Fetching single dataset failed - update sync status
                 logging.error(
