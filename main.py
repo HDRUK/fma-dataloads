@@ -61,6 +61,7 @@ def main(custodian_id: str) -> None:
         ##########################################
 
         publisher = get_publisher(db=db, custodian_id=custodian_id)
+
         custodian_name = publisher["publisherDetails"]["name"]
 
         if not publisher["federation"]["active"]:
@@ -105,7 +106,6 @@ def main(custodian_id: str) -> None:
             bearer_token = "Bearer " + secrets["bearer_token"]
             
             headers = {"Authorization": bearer_token }
-
             custodian_datasets = get_datasets(custodian_datasets_url, headers)
 
         else:

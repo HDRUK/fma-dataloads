@@ -236,7 +236,6 @@ def _send_mail(
         send_grid.client.mail.send.post(request_body=mail.get())
     except Exception as error:
         logging.critical(error)
-        print(f"Error sending emails: {error}")
 
 
 def _format_html_list(datasets: list = None, key: str = "") -> str:
