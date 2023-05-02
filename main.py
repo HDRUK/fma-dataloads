@@ -130,7 +130,6 @@ def main(custodian_id: str) -> None:
         ##########################################
         # PID is completely new to Gateway
 
-        print("custodian_datasets", custodian_datasets , "\n")
         new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
         sync_list = []

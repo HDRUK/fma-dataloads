@@ -16,7 +16,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
 
     if response.status_code == 200:
         data = response.json()
-        print("data", data)
+
         return data["items"]
 
     if response.status_code in [401, 403]:
