@@ -46,7 +46,7 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
 
     updated_url = url.replace("{id}", str(dataset_id))
     
-    print("updated_url", updated_url)
+    print("get dataset url", updated_url)
 
     response = requests.get(updated_url, headers=headers)
 
