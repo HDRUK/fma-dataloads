@@ -80,7 +80,10 @@ def main(custodian_id: str) -> None:
             publisher["federation"]["endpoints"]["baseURL"]
             + publisher["federation"]["endpoints"]["datasets"]
         )
-
+        custodian_dataset_url = (
+            publisher["federation"]["endpoints"]["baseURL"]
+            + publisher["federation"]["endpoints"]["dataset"]
+        )
         if publisher["federation"]["auth"]["type"] == "oauth":
             custodian_token_url = (
                 publisher["federation"]["endpoints"]["baseURL"] + "/oauth/token"
@@ -139,7 +142,7 @@ def main(custodian_id: str) -> None:
         for i in new_datasets:
             try:
                 dataset = get_dataset(
-                    custodian_datasets_url, headers, i["persistentId"]
+                    custodian_dataset_url, headers, i["persistentId"]
                 )
 
             except RequestError as error:
@@ -210,7 +213,7 @@ def main(custodian_id: str) -> None:
 
                 try:
                     new_datasetv2 = get_dataset(
-                        custodian_datasets_url,
+                        custodian_dataset_url,
                         headers,
                         custodian_version["persistentId"],
                     )
