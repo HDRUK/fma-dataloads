@@ -16,6 +16,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
 
     if response.status_code == 200:
         data = response.json()
+        print("data", data)
         return data["items"]
 
     if response.status_code in [401, 403]:
@@ -37,10 +38,15 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
 
     updated_url = ''
 
-    if url.find("?") != -1:
-        updated_url = url[:url.find("?")] + "/" + str(dataset_id) + url[url.find("?"):]
-    else:
-        updated_url = url + "/" + str(dataset_id)
+    #  optional
+    # if url.find("?") != -1:
+    #     updated_url = url[:url.find("?")] + "/" + str(dataset_id) + url[url.find("?"):]
+    # else:
+    #     updated_url = url + "/" + str(dataset_id)
+
+    updated_url = url.replace("{id}", str(dataset_id))
+    
+    print("updated_url", updated_url)
 
     response = requests.get(updated_url, headers=headers)
 
