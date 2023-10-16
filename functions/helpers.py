@@ -169,11 +169,19 @@ def transform_dataset(
                 formatted_dataset["structuralMetadata"] = _format_structural_metadata(
                     formatted_dataset["datasetv2"]["structuralMetadata"]
                 )
-                formatted_dataset["datasetfields"][
-                    "technicaldetails"
-                ] = _format_technical_details(
-                    formatted_dataset["datasetv2"]["structuralMetadata"]
-                )
+            
+                if _keys_exist(dataset, "technicaldetails"):
+                    if len(dataset["technicaldetails"]) > 0:
+                        if verify_technical_metadata_schema_version(validation_schema) == True:
+                            formatted_dataset["datasetfields"][
+                                "technicaldetails"
+                            ] = _format_technical_details(
+                                formatted_dataset["datasetv2"]["structuralMetadata"]
+                            )
+                else:
+                    formatted_dataset["datasetfields"][
+                                "technicaldetails"
+                            ] = []
 
         # Necessary to convert csv or string fields to an array for FE requirements
         csv_or_string_field_paths = [

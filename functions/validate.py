@@ -46,3 +46,10 @@ def verify_schema_version(schema_url: str = "") -> bool:
     """
     allowed_versions = ["2.0.0", "2.0.2", "2.1.0", "latest"]
     return bool(re.search("|".join(allowed_versions), schema_url))
+
+def verify_technical_metadata_schema_version(schema_url: str = "") -> bool:
+    """
+    Verify that the supplied schema is either 2.1.0 or latest. Requirement for technical metadata.
+    """
+    allowed_versions = ["2.1.0", "latest"]
+    return bool(re.search("|".join(allowed_versions), schema_url))
