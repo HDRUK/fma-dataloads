@@ -305,6 +305,7 @@ def main(custodian_id: str) -> None:
             )
 
         if len(invalid_datasets) > 0:
+            print("invalid_datasets", invalid_datasets)
             sync_list.extend(
                 create_sync_array(
                     datasets=invalid_datasets,
