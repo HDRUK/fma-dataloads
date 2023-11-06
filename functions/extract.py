@@ -20,8 +20,8 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
         data = response.json()
 
         # return data["items"]
-        logging.info(json.loads(data["items"]))
-        json_data = json.dumps(data, ensure_ascii=False).encode('utf8')
+        logging.info(json.loads(data))
+        json_data = json.dumps(json.loads(data), ensure_ascii=False).encode('utf8').decode('unicode-escape')
         logging.info(json.loads(json_data["items"]))
         return json_data["items"]
 
@@ -62,7 +62,7 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
 
         # return data
         logging.info(json.loads(data))
-        json_data = json.dumps(data, ensure_ascii=False).encode('utf8')
+        json_data = json.dumps(json.loads(data), ensure_ascii=False).encode('utf8').decode('unicode-escape')
         logging.info(json.loads(json_data))
         return json_data
 
