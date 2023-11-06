@@ -13,6 +13,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
 
     response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
 
     if response.status_code == 200:
         data = response.json()
@@ -49,6 +50,7 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     print("get dataset url", updated_url)
 
     response = requests.get(updated_url, headers=headers)
+    response.encoding = 'utf-8'
 
     if response.status_code == 200:
         data = response.json()
