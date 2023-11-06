@@ -50,8 +50,8 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     response = requests.get(updated_url, headers=headers)
 
     if response.status_code == 200:
-        data = response.json()
-        return data.encode('utf-8')
+        data = response.json('utf-8')
+        return data
 
     if response.status_code in [401, 403]:
         raise AuthError(
