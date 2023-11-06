@@ -4,6 +4,7 @@ Functions for retrieving datasets or a dataset from the target server.
 import logging
 import requests
 import json
+from json.decoder import JSONDecodeError
 
 from .exceptions import *
 
@@ -17,7 +18,11 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     response.encoding = 'utf-8-sig'
 
     if response.status_code == 200:
-        data = response.json()
+        # data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            print('Response error decoding ::: get_datasets')
 
         # return data["items"]
         logging.info(json.dumps(data, ensure_ascii=True))
@@ -57,7 +62,10 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     response.encoding = 'utf-8'
 
     if response.status_code == 200:
-        data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            print('Response error decoding ::: get_dataset')
 
         # return data
         logging.info(json.dumps(data, ensure_ascii=True))
