@@ -1,8 +1,9 @@
 """
 Functions for retrieving datasets or a dataset from the target server.
 """
-
-import requests, json
+import logging
+import requests
+import json
 
 from .exceptions import *
 
@@ -19,6 +20,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
         data = response.json()
 
         # return data["items"]
+        logging.info(json.loads(data["items"]));
         json_data = json.dumps(data, ensure_ascii=False)
         return json_data["items"]
 
@@ -58,6 +60,7 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
         data = response.json()
 
         # return data
+        logging.info(json.loads(data));
         json_data = json.dumps(data, ensure_ascii=False)
         return json_data
 
