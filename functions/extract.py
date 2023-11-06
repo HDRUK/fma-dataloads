@@ -3,7 +3,7 @@ Functions for retrieving datasets or a dataset from the target server.
 """
 
 import requests
-
+import json
 from .exceptions import *
 
 
@@ -13,8 +13,9 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
 
     response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
     if response.status_code == 200:
-        data = response.json()
+        data = json.loads(response.text)
 
         return data["items"]
 
@@ -48,9 +49,9 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     print("get dataset url", updated_url)
 
     response = requests.get(updated_url, headers=headers)
-
+    response.encoding = 'utf-8'
     if response.status_code == 200:
-        data = response.json('utf-8')
+        data = json.loads(response.text)
         return data
 
     if response.status_code in [401, 403]:
