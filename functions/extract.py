@@ -14,15 +14,14 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
 
     response = requests.get(url, headers=headers)
-    response.encoding = 'utf-8'
+    response.encoding = 'utf-8-sig'
 
     if response.status_code == 200:
         data = response.json()
 
         # return data["items"]
-        logging.info(json.loads(data))
-        json_data = json.dumps(json.loads(data), ensure_ascii=False).encode('utf8').decode('unicode-escape')
-        logging.info(json.loads(json_data["items"]))
+        logging.info(json.dumps(data))
+        json_data = json.loads(json.dumps(data))
         return json_data["items"]
 
     if response.status_code in [401, 403]:
@@ -61,9 +60,8 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
         data = response.json()
 
         # return data
-        logging.info(json.loads(data))
-        json_data = json.dumps(json.loads(data), ensure_ascii=False).encode('utf8').decode('unicode-escape')
-        logging.info(json.loads(json_data))
+        logging.info(json.dumps(data))
+        json_data = json.loads(json.dumps(data))
         return json_data
 
     if response.status_code in [401, 403]:
