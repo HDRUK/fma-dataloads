@@ -121,7 +121,7 @@ def transform_dataset(
                 "physicalSampleAvailability": dataset["coverage"][
                     "physicalSampleAvailability"
                 ],
-                "abstract": dataset["summary"]["abstract"],
+                "abstract": dataset["summary"]["abstract"].encode(encoding = 'UTF-8', errors = 'strict'),
                 "releaseDate": dataset["provenance"]["temporal"][
                     "distributionReleaseDate"
                 ],
@@ -286,7 +286,7 @@ def _generate_question_answers(dataset: dict = None) -> dict:
     if _keys_exist(dataset, "summary", "title"):
         question_answers["properties/summary/title"] = dataset["summary"]["title"]
     if _keys_exist(dataset, "summary", "abstract"):
-        question_answers["properties/summary/abstract"] = dataset["summary"]["abstract"]
+        question_answers["properties/summary/abstract"] = dataset["summary"]["abstract"].encode(encoding = 'UTF-8', errors = 'strict')
     if _keys_exist(dataset, "summary", "contactPoint"):
         question_answers["properties/summary/contactPoint"] = dataset["summary"][
             "contactPoint"
