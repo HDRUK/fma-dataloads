@@ -25,8 +25,9 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
             print('Response error decoding ::: get_datasets')
 
         # return data["items"]
-        logging.info(json.dumps(data, ensure_ascii=True).encode(encoding = 'UTF-8', errors = 'replace'))
-        json_data = json.loads(json.dumps(data, ensure_ascii=True).encode(encoding = 'UTF-8', errors = 'replace'))
+        logging.info(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
+        json_data = json.loads(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
+        logging.info(json_data["items"])
         return json_data["items"]
 
     if response.status_code in [401, 403]:
@@ -68,8 +69,9 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
             print('Response error decoding ::: get_dataset')
 
         # return data
-        logging.info(json.dumps(data, ensure_ascii=True).encode(encoding = 'UTF-8', errors = 'replace'))
-        json_data = json.loads(json.dumps(data, ensure_ascii=True).encode(encoding = 'UTF-8', errors = 'replace'))
+        logging.info(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
+        json_data = json.loads(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
+        logging.info(json_data)
         return json_data
 
     if response.status_code in [401, 403]:
