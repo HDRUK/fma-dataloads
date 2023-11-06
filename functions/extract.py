@@ -20,8 +20,8 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
         data = response.json()
 
         # return data["items"]
-        logging.info(json.dumps(data, ensure_ascii=False))
-        json_data = json.loads(json.dumps(data, ensure_ascii=False))
+        logging.info(json.dumps(data, ensure_ascii=True))
+        json_data = json.loads(json.dumps(data, ensure_ascii=True))
         return json_data["items"]
 
     if response.status_code in [401, 403]:
@@ -60,8 +60,8 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
         data = response.json()
 
         # return data
-        logging.info(json.dumps(data, ensure_ascii=False))
-        json_data = json.loads(json.dumps(data, ensure_ascii=False))
+        logging.info(json.dumps(data, ensure_ascii=True))
+        json_data = json.loads(json.dumps(data, ensure_ascii=True))
         return json_data
 
     if response.status_code in [401, 403]:
