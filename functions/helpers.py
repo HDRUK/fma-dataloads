@@ -111,7 +111,7 @@ def transform_dataset(
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
         dataset_summary_abstract = dataset["summary"]["abstract"]
         logging.critical(dataset_summary_abstract)
-        dataset_summary_abstract_encode = dataset_summary_abstract.encode('UTF-8', 'replace')
+        dataset_summary_abstract_encode = dataset_summary_abstract.decode('cp1252').encode('utf-8', 'replace')
         logging.critical(dataset_summary_abstract_encode)
         formatted_dataset = {
             "datasetv2": dataset,
