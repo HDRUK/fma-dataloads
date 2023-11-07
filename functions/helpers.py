@@ -111,8 +111,8 @@ def transform_dataset(
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
         dataset_summary_abstract = dataset["summary"]["abstract"]
         logging.critical(dataset_summary_abstract)
-        # dataset_summary_abstract_encode = dataset_summary_abstract.encode('utf-8', 'ignore')
-        dataset_summary_abstract_encode = dataset_summary_abstract.replace(u'\u2019', '\'')
+        dataset_summary_abstract_encode = dataset_summary_abstract.encode('utf-8', 'ignore')
+        # dataset_summary_abstract_encode = dataset_summary_abstract.replace(u'\u2019', '\'')
         logging.critical(dataset_summary_abstract_encode)
         formatted_dataset = {
             "datasetv2": dataset,
@@ -289,11 +289,17 @@ def _generate_question_answers(dataset: dict = None) -> dict:
     """
     question_answers = {}
 
+    dataset_summary_abstract = dataset["summary"]["abstract"]
+    logging.critical(dataset_summary_abstract)
+    dataset_summary_abstract_encode = dataset_summary_abstract.encode('utf-8', 'ignore')
+    # dataset_summary_abstract_encode = dataset_summary_abstract.replace(u'\u2019', '\'')
+    logging.critical(dataset_summary_abstract_encode)
+
     # Summary
     if _keys_exist(dataset, "summary", "title"):
         question_answers["properties/summary/title"] = dataset["summary"]["title"]
     if _keys_exist(dataset, "summary", "abstract"):
-        question_answers["properties/summary/abstract"] = dataset["summary"]["abstract"]
+        question_answers["properties/summary/abstract"] = dataset_summary_abstract_encode
     if _keys_exist(dataset, "summary", "contactPoint"):
         question_answers["properties/summary/contactPoint"] = dataset["summary"][
             "contactPoint"
