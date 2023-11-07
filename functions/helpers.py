@@ -15,6 +15,7 @@ from .exceptions import CriticalError
 
 logging.basicConfig(level=logging.INFO)
 
+
 def datasets_to_archive(
     custodian_datasets: list = None, gateway_datasets: list = None
 ) -> np.array:
