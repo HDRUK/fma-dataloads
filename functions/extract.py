@@ -15,7 +15,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
 
     response = requests.get(url, headers=headers)
-    response.encoding = 'utf-8-sig'
+    response.encoding = 'utf-8'
 
     if response.status_code == 200:
         # data = response.json()

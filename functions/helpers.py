@@ -4,6 +4,7 @@ Helper functions for comparing lists and transforming data.
 
 import json
 import unidecode
+import logging
 import string
 import numpy as np
 
@@ -13,6 +14,7 @@ from collections.abc import Mapping
 
 from .exceptions import CriticalError
 
+logging.basicConfig(level=logging.INFO)
 
 def datasets_to_archive(
     custodian_datasets: list = None, gateway_datasets: list = None

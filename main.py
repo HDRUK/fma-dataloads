@@ -2,7 +2,6 @@ import os
 import time
 import http
 import base64
-import logging
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -11,7 +10,6 @@ from flask import Flask, request, Response
 from functions import *
 
 load_dotenv()
-logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 client = MongoClient(os.getenv("MONGO_URI") + "/" + os.getenv("MONGO_DATABASE"))
