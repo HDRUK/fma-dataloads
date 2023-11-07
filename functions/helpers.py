@@ -3,7 +3,6 @@ Helper functions for comparing lists and transforming data.
 """
 
 import json
-import unidecode
 import logging
 import string
 import numpy as np
@@ -111,7 +110,7 @@ def transform_dataset(
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
         dataset_summary_abstract = dataset["summary"]["abstract"]
         print('dataset_summary_abstract', dataset_summary_abstract)
-        dataset_summary_abstract_encode = unidecode.unidecode(dataset_summary_abstract)
+        dataset_summary_abstract_encode = dataset_summary_abstract.encode(encoding = 'UTF-8', errors = 'ignore')
         print('dataset_summary_abstract_encode', dataset_summary_abstract_encode)
         formatted_dataset = {
             "datasetv2": dataset,
