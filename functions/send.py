@@ -235,6 +235,7 @@ def _send_mail(
     try:
         send_grid.client.mail.send.post(request_body=mail.get())
     except Exception as error:
+        logging.critical("test 2")
         logging.critical(error)
 
 

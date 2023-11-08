@@ -34,6 +34,7 @@ def trigger() -> Response:
     try:
         main(custodian_id=custodian_id)
     except Exception as error:
+        logging.critical("test")
         logging.critical(error)
         return ("", http.HTTPStatus.INTERNAL_SERVER_ERROR)
     else:
