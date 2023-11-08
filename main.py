@@ -131,10 +131,7 @@ def main(custodian_id: str) -> None:
         ##########################################
         # PID is completely new to Gateway
 
-        try:
-            new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
-        except:
-            print("An exception occurred")
+        new_datasets = extract_new_datasets(custodian_datasets, gateway_datasets)
 
         sync_list = []
         invalid_datasets = []
@@ -236,11 +233,14 @@ def main(custodian_id: str) -> None:
                     )
                     continue
 
-                validation_schema = (
-                    custodian_version["@schema"]
-                    if "@schema" in custodian_version
-                    else ""
-                )
+                try:
+                    validation_schema = (
+                        custodian_version["@schema"]
+                        if "@schema" in custodian_version
+                        else ""
+                    )
+                except:
+                    print("validation_schema")
 
                 if not verify_schema_version(validation_schema):
                     logging.warning(
