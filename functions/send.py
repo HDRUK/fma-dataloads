@@ -333,7 +333,7 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
             # pdf.set_font("Helvetica", size=12, style="B")
             pdf.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
             pdf.set_font('ArialUnicode', '', 11)
-            summary_title = str(i["summary"]["title"]).encode('utf-8').encode('utf-8')
+            summary_title = str(i["summary"]["title"]).encode('utf-8').decode('utf-8')
 
             pdf.cell(0, 10, txt=f'{summary_title} ({i["identifier"]})', ln=1)
             pdf.set_font("Helvetica", size=10)
