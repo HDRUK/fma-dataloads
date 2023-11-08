@@ -3,6 +3,7 @@ import time
 import http
 import base64
 import logging
+import json
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -322,6 +323,12 @@ def main(custodian_id: str) -> None:
         # Emails
         ##########################################
         try:
+            datasets = json.loads(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
+            archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            new_valid_datasets = json.loads(json.dumps(new_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            updated_valid_datasets = json.loads(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            invalid_datasets = json.loads(json.dumps(invalid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            unsupported_version_datasets = json.loads(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
             if any(
                 len(datasets) > 0
                 for datasets in [
@@ -342,8 +349,6 @@ def main(custodian_id: str) -> None:
                 )
         except:
             print("Emails")
-
-
 
     except (CriticalError, RequestError, AuthError) as error:
         logging.critical("main ::: test 2")
