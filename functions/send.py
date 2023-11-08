@@ -99,6 +99,7 @@ def send_summary_mail(
 
     if len([*unsupported_version_datasets, *failed_validation]) > 0:
         if len(failed_validation) > 0:
+            print("Start create Pdf")
             attachment = _create_pdf(failed_validation)
 
         message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Failed validation/unsupported version: </th></tr>"""
@@ -351,11 +352,11 @@ class PDF(FPDF):
     """
 
     def header(self):
-        self.set_font("Arial", "I", 8)
+        self.set_font("Helvetica", "I", 8)
         self.cell(0, 10, "FMA validation errors", 0, 0, "R")
         self.ln(10)
 
     def footer(self):
         self.set_y(-15)
-        self.set_font("Arial", "I", 8)
+        self.set_font("Helvetica", "I", 8)
         self.cell(0, 10, f"{self.page_no()}", 0, 0, "R")
