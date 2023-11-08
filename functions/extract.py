@@ -2,11 +2,11 @@
 Functions for retrieving datasets or a dataset from the target server.
 """
 import requests
+import logging
 import json
 from json.decoder import JSONDecodeError
 
 from .exceptions import *
-
 
 def get_datasets(url: str = "", headers: dict = None) -> list:
     """
@@ -24,7 +24,7 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
             print('Response error decoding ::: get_datasets')
 
         logging.info(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
-        
+
         return data["items"]
 
     if response.status_code in [401, 403]:
