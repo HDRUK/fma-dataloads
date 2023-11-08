@@ -322,6 +322,13 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
+        logging.debug(datasets)
+        logging.debug(archived_datasets)
+        logging.debug(new_datasets)
+        logging.debug(new_valid_datasets)
+        logging.debug(updated_valid_datasets)
+        logging.debug(invalid_datasets)
+        logging.debug(unsupported_version_datasets)
         try:
             datasets = json.loads(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
             archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
