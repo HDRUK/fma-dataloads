@@ -352,8 +352,8 @@ def main(custodian_id: str) -> None:
                     failed_validation=invalid_datasets,
                     unsupported_version_datasets=unsupported_version_datasets,
                 )
-        except:
-            print("Emails")
+        except Exception as error:
+            print(error)
 
     except (CriticalError, RequestError, AuthError) as error:
         logging.critical("main ::: test 2")
