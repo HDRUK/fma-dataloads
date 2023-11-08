@@ -139,6 +139,7 @@ def main(custodian_id: str) -> None:
         updated_valid_datasets = []
         previous_version_datasets = []
         unsupported_version_datasets = []
+        datasets = []
 
         for i in new_datasets:
             try:
@@ -322,7 +323,7 @@ def main(custodian_id: str) -> None:
         # Emails
         ##########################################
         try:
-            # logging.debug(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
+            logging.debug(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
             # logging.debug(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
             # logging.debug(json.dumps(new_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
             # logging.debug(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
