@@ -25,14 +25,6 @@ def send_summary_mail(
     """
     attachment = None
 
-    print('publisher :: send_summary_mail', publisher)
-    print('archived_datasets :: send_summary_mail', archived_datasets)
-    print('new_datasets :: send_summary_mail', new_datasets)
-    print('updated_datasets :: send_summary_mail', updated_datasets)
-    print('failed_validation :: send_summary_mail', failed_validation)
-    print('unsupported_version_datasets :: send_summary_mail', unsupported_version_datasets)
-    # logging.debug(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
-
     subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d/%m/%y')})"
 
     message = """<div style="border: 1px solid #d0d3d4; border-radius: 15px; width: 700px; margin: 0 auto;">
@@ -335,21 +327,24 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
     """
     pdf = PDF()
 
-    for i in invalid_datasets:
-        pdf.add_page()
-        pdf.set_font("Arial", size=12, style="B")
-        pdf.cell(0, 10, txt=f'{i["summary"]["title"]} ({i["identifier"]})', ln=1)
-        pdf.set_font("Arial", size=10)
+    try:
+        for i in invalid_datasets:
+            pdf.add_page()
+            pdf.set_font("Arial", size=12, style="B")
+            pdf.cell(0, 10, txt=f'{i["summary"]["title"]} ({i["identifier"]})', ln=1)
+            pdf.set_font("Arial", size=10)
 
-        for j in i["validation_errors"]:
-            pdf.cell(5, 5, txt=" - ", ln=0)
-            pdf.multi_cell(
-                0,
-                5,
-                txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
-            )
+            for j in i["validation_errors"]:
+                pdf.cell(5, 5, txt=" - ", ln=0)
+                pdf.multi_cell(
+                    0,
+                    5,
+                    txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
+                )
 
-    return pdf.output(dest="S").encode("latin-1")
+        return pdf.output(dest="S").encode("utf8")
+    except Exception as error:
+        print(error)
 
 
 class PDF(FPDF):
