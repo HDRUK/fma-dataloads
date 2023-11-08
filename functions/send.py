@@ -330,8 +330,10 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
     try:
         for i in invalid_datasets:
             pdf.add_page()
-            pdf.set_font("Helvetica", size=12, style="B")
-            summary_title = str(i["summary"]["title"]).decode('cp1252').encode('utf-8')
+            # pdf.set_font("Helvetica", size=12, style="B")
+            pdf.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+            pdf.set_font('ArialUnicode', '', 11)
+            summary_title = str(i["summary"]["title"]).decode('ascii').encode('utf-8')
 
             pdf.cell(0, 10, txt=f'{summary_title} ({i["identifier"]})', ln=1)
             pdf.set_font("Helvetica", size=10)
@@ -355,11 +357,15 @@ class PDF(FPDF):
     """
 
     def header(self):
-        self.set_font("Helvetica", "I", 8)
+        # self.set_font("Helvetica", "I", 8)
+        self.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+        self.set_font('ArialUnicode', '', 11)
         self.cell(0, 10, "FMA validation errors", 0, 0, "R")
         self.ln(10)
 
     def footer(self):
         self.set_y(-15)
-        self.set_font("Helvetica", "I", 8)
+        # self.set_font("Helvetica", "I", 8)
+        self.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+        self.set_font('ArialUnicode', '', 11)
         self.cell(0, 10, f"{self.page_no()}", 0, 0, "R")
