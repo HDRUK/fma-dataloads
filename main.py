@@ -3,7 +3,6 @@ import time
 import http
 import base64
 import logging
-import json
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -344,7 +343,6 @@ def main(custodian_id: str) -> None:
                 print(error)
 
     except (CriticalError, RequestError, AuthError) as error:
-        logging.critical("main ::: test 2")
         # Custom error raised, log error, send email if required, set federation.active to false
         if error.__class__.__name__ == "AuthError":
             send_auth_error_mail(publisher=publisher, url=error.__url__())
