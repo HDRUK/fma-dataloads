@@ -326,6 +326,7 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
     """
     pdf = PDF()
 
+    logging.info(invalid_datasets)
     try:
         for i in invalid_datasets:
             pdf.add_page()
