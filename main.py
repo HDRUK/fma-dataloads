@@ -233,27 +233,28 @@ def main(custodian_id: str) -> None:
                     )
                     continue
 
-                try:
-                    validation_schema = (
-                        custodian_version["@schema"]
-                        if "@schema" in custodian_version
-                        else ""
-                    )
-                except:
-                    print("validation_schema")
+                validation_schema = (
+                    custodian_version["@schema"]
+                    if "@schema" in custodian_version
+                    else ""
+                )
 
                 if not verify_schema_version(validation_schema):
                     logging.warning(
                         f'Schema not supported for dataset {custodian_version["persistentId"]}'
                     )
 
-                    sync_list.extend(
-                        create_sync_array(
-                            datasets=[i],
-                            sync_status="unsupported_version",
-                            publisher=publisher,
+                    try:
+                        sync_list.extend(
+                            create_sync_array(
+                                datasets=[i],
+                                sync_status="unsupported_version",
+                                publisher=publisher,
+                            )
                         )
-                    )
+                    except:
+                        print("sync_list.extend")
+
                     unsupported_version_datasets.append(custodian_version)
                     continue
 
