@@ -139,7 +139,6 @@ def main(custodian_id: str) -> None:
         updated_valid_datasets = []
         previous_version_datasets = []
         unsupported_version_datasets = []
-        datasets = []
 
         for i in new_datasets:
             try:
@@ -322,28 +321,29 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
-        print('archived_datasets', archived_datasets)
-        print('new_datasets', new_datasets)
-        print('new_valid_datasets', new_valid_datasets)
-        print('updated_valid_datasets', updated_valid_datasets)
-        print('invalid_datasets', invalid_datasets)
-        print('unsupported_version_datasets', unsupported_version_datasets)
-        try:
+        if any(
+            len(datasets) > 0
+            for datasets in [
+                archived_datasets,
+                new_valid_datasets,
+                updated_valid_datasets,
+                invalid_datasets,
+                unsupported_version_datasets,
+            ]
+        ):
+            print('archived_datasets', archived_datasets)
+            print('new_datasets', new_datasets)
+            print('new_valid_datasets', new_valid_datasets)
+            print('updated_valid_datasets', updated_valid_datasets)
+            print('invalid_datasets', invalid_datasets)
+            print('unsupported_version_datasets', unsupported_version_datasets)
+
             archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("utf8", "replace"))
             new_valid_datasets = json.loads(json.dumps(new_valid_datasets, ensure_ascii=True).encode("utf8", "replace"))
             updated_valid_datasets = json.loads(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("utf8", "replace"))
             invalid_datasets = json.loads(json.dumps(invalid_datasets, ensure_ascii=True).encode("utf8", "replace"))
             unsupported_version_datasets = json.loads(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("utf8", "replace"))
-            if any(
-                len(datasets) > 0
-                for datasets in [
-                    archived_datasets,
-                    new_valid_datasets,
-                    updated_valid_datasets,
-                    invalid_datasets,
-                    unsupported_version_datasets,
-                ]
-            ):
+            try:
                 send_summary_mail(
                     publisher=publisher,
                     archived_datasets=archived_datasets,
@@ -352,8 +352,8 @@ def main(custodian_id: str) -> None:
                     failed_validation=invalid_datasets,
                     unsupported_version_datasets=unsupported_version_datasets,
                 )
-        except Exception as error:
-            print(error)
+            except Exception as error:
+                print(error)
 
     except (CriticalError, RequestError, AuthError) as error:
         logging.critical("main ::: test 2")
