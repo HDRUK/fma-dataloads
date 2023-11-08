@@ -35,7 +35,6 @@ def trigger() -> Response:
     try:
         main(custodian_id=custodian_id)
     except Exception as error:
-        logging.critical("test")
         logging.critical(error)
         return ("", http.HTTPStatus.INTERNAL_SERVER_ERROR)
     else:
@@ -329,12 +328,12 @@ def main(custodian_id: str) -> None:
             logging.debug(updated_valid_datasets)
             logging.debug(invalid_datasets)
             logging.debug(unsupported_version_datasets)
-            # datasets = json.loads(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
-            # archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
-            # new_valid_datasets = json.loads(json.dumps(new_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
-            # updated_valid_datasets = json.loads(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
-            # invalid_datasets = json.loads(json.dumps(invalid_datasets, ensure_ascii=True).encode("ascii", "replace"))
-            # unsupported_version_datasets = json.loads(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            datasets = json.loads(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
+            archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            new_valid_datasets = json.loads(json.dumps(new_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            updated_valid_datasets = json.loads(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            invalid_datasets = json.loads(json.dumps(invalid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+            unsupported_version_datasets = json.loads(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
             if any(
                 len(datasets) > 0
                 for datasets in [

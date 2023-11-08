@@ -111,8 +111,6 @@ def transform_dataset(
         # Add publisher identifier to link dataset to Gateway team
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
 
-        logging.critical("transform_dataset")
-        logging.critical(dataset)
         formatted_dataset = {
             "datasetv2": dataset,
             "name": dataset["summary"]["title"],
