@@ -244,16 +244,13 @@ def main(custodian_id: str) -> None:
                         f'Schema not supported for dataset {custodian_version["persistentId"]}'
                     )
 
-                    try:
-                        sync_list.extend(
-                            create_sync_array(
-                                datasets=[i],
-                                sync_status="unsupported_version",
-                                publisher=publisher,
-                            )
+                    sync_list.extend(
+                        create_sync_array(
+                            datasets=[i],
+                            sync_status="unsupported_version",
+                            publisher=publisher,
                         )
-                    except:
-                        print("sync_list.extend")
+                    )
 
                     unsupported_version_datasets.append(custodian_version)
                     continue
@@ -324,25 +321,29 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
+        try:
+            if any(
+                len(datasets) > 0
+                for datasets in [
+                    archived_datasets,
+                    new_valid_datasets,
+                    updated_valid_datasets,
+                    invalid_datasets,
+                    unsupported_version_datasets,
+                ]
+            ):
+                send_summary_mail(
+                    publisher=publisher,
+                    archived_datasets=archived_datasets,
+                    new_datasets=new_valid_datasets,
+                    updated_datasets=updated_valid_datasets,
+                    failed_validation=invalid_datasets,
+                    unsupported_version_datasets=unsupported_version_datasets,
+                )
+        except:
+            print("Emails")
 
-        if any(
-            len(datasets) > 0
-            for datasets in [
-                archived_datasets,
-                new_valid_datasets,
-                updated_valid_datasets,
-                invalid_datasets,
-                unsupported_version_datasets,
-            ]
-        ):
-            send_summary_mail(
-                publisher=publisher,
-                archived_datasets=archived_datasets,
-                new_datasets=new_valid_datasets,
-                updated_datasets=updated_valid_datasets,
-                failed_validation=invalid_datasets,
-                unsupported_version_datasets=unsupported_version_datasets,
-            )
+
 
     except (CriticalError, RequestError, AuthError) as error:
         logging.critical("main ::: test 2")
