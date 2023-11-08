@@ -341,7 +341,7 @@ def main(custodian_id: str) -> None:
             )
 
     except (CriticalError, RequestError, AuthError) as error:
-        logging.critical("test 2")
+        logging.critical("main ::: test 2")
         # Custom error raised, log error, send email if required, set federation.active to false
         if error.__class__.__name__ == "AuthError":
             send_auth_error_mail(publisher=publisher, url=error.__url__())
