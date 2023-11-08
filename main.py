@@ -322,13 +322,13 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
-        print(datasets)
-        print(archived_datasets)
-        print(new_datasets)
-        print(new_valid_datasets)
-        print(updated_valid_datasets)
-        print(invalid_datasets)
-        print(unsupported_version_datasets)
+        print('datasets', datasets)
+        print('archived_datasets', archived_datasets)
+        print('new_datasets', new_datasets)
+        print('new_valid_datasets', new_valid_datasets)
+        print('updated_valid_datasets', updated_valid_datasets)
+        print('invalid_datasets', invalid_datasets)
+        print('unsupported_version_datasets', unsupported_version_datasets)
         # try:
         #     datasets = json.loads(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
         #     archived_datasets = json.loads(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
