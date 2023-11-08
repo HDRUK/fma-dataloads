@@ -328,9 +328,9 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
     try:
         for i in invalid_datasets:
             pdf.add_page()
-            pdf.set_font("Arial", size=12, style="B")
+            pdf.set_font("Helvetica", size=12, style="B")
             pdf.cell(0, 10, txt=f'{i["summary"]["title"]} ({i["identifier"]})', ln=1)
-            pdf.set_font("Arial", size=10)
+            pdf.set_font("Helvetica", size=10)
 
             for j in i["validation_errors"]:
                 pdf.cell(5, 5, txt=" - ", ln=0)
@@ -342,7 +342,7 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
 
         return pdf.output(dest="S").encode("utf-8")
     except Exception as error:
-        print(error)
+        print("Create Pdf :: ", error)
 
 
 class PDF(FPDF):
