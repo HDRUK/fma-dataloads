@@ -342,7 +342,7 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
                     txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
                 )
 
-        return pdf.output(dest="S").encode("utf8")
+        return pdf.output(dest="S").encode("utf-8")
     except Exception as error:
         print(error)
 

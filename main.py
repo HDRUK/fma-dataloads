@@ -331,13 +331,6 @@ def main(custodian_id: str) -> None:
                 unsupported_version_datasets,
             ]
         ):
-            print('new_valid_datasets', new_valid_datasets)
-            print('updated_valid_datasets', updated_valid_datasets)
-            print('invalid_datasets', invalid_datasets)
-
-            new_valid_datasets = json.loads(json.dumps(new_valid_datasets, ensure_ascii=True).encode("utf8", "replace"))
-            updated_valid_datasets = json.loads(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("utf8", "replace"))
-            invalid_datasets = json.loads(json.dumps(invalid_datasets, ensure_ascii=True).encode("utf8", "replace"))
             try:
                 send_summary_mail(
                     publisher=publisher,
