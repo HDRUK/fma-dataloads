@@ -322,6 +322,12 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
+        logging.debug(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
+        logging.debug(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
+        logging.debug(json.dumps(new_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+        logging.debug(json.dumps(updated_valid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+        logging.debug(json.dumps(invalid_datasets, ensure_ascii=True).encode("ascii", "replace"))
+        logging.debug(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
         try:
             logging.debug(json.dumps(datasets, ensure_ascii=True).encode("ascii", "replace"))
             logging.debug(json.dumps(archived_datasets, ensure_ascii=True).encode("ascii", "replace"))
