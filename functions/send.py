@@ -210,6 +210,9 @@ def _send_mail(
     email_body = _get_header() + message + _get_footer()
     content = Content("text/html", email_body)
 
+    logging.critical(subject)
+    logging.critical(content)
+
     if admin_email:
         email_to.append(admin_email)
 
