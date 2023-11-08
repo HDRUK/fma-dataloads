@@ -25,12 +25,12 @@ def send_summary_mail(
     """
     attachment = None
 
-    logging.debug(publisher)
-    logging.debug(archived_datasets)
-    logging.debug(new_datasets)
-    logging.debug(updated_datasets)
-    logging.debug(failed_validation)
-    logging.debug(unsupported_version_datasets)
+    print('publisher :: send_summary_mail', publisher)
+    print('archived_datasets :: send_summary_mail', archived_datasets)
+    print('new_datasets :: send_summary_mail', new_datasets)
+    print('updated_datasets :: send_summary_mail', updated_datasets)
+    print('failed_validation :: send_summary_mail', failed_validation)
+    print('unsupported_version_datasets :: send_summary_mail', unsupported_version_datasets)
     # logging.debug(json.dumps(unsupported_version_datasets, ensure_ascii=True).encode("ascii", "replace"))
 
     subject = f"Federated metadata synchronisation ({datetime.datetime.now().strftime('%d/%m/%y')})"
