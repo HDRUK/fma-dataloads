@@ -106,14 +106,12 @@ def transform_dataset(
     """
     try:
         dataset = _merge_dictionaries(dataset)
+        dataset = json.loads(json.dumps(dataset, ensure_ascii=True).encode("ascii", "replace"))
 
         # Add publisher identifier to link dataset to Gateway team
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
-        dataset_summary_abstract = dataset["summary"]["abstract"]
-        logging.critical(dataset_summary_abstract)
-        # dataset_summary_abstract_encode = dataset_summary_abstract.encode('utf-8', 'ignore')
-        dataset_summary_abstract_encode = dataset_summary_abstract.replace(u'\u2019', '\'')
-        logging.critical(dataset_summary_abstract_encode)
+
+        logging.critical(dataset)
         formatted_dataset = {
             "datasetv2": dataset,
             "name": dataset["summary"]["title"],
@@ -128,7 +126,7 @@ def transform_dataset(
                 "physicalSampleAvailability": dataset["coverage"][
                     "physicalSampleAvailability"
                 ],
-                "abstract": dataset_summary_abstract_encode,
+                "abstract": dataset["summary"]["abstract"],
                 "releaseDate": dataset["provenance"]["temporal"][
                     "distributionReleaseDate"
                 ],
@@ -288,7 +286,7 @@ def _generate_question_answers(dataset: dict = None) -> dict:
     INTERNAL: generate the Gateway questionAnswers field given a datasetv2 object.
     """
     question_answers = {}
-
+    dataset = json.loads(json.dumps(dataset, ensure_ascii=True).encode("ascii", "replace"))
 
     # Summary
     if _keys_exist(dataset, "summary", "title"):
@@ -493,8 +491,6 @@ def _generate_question_answers(dataset: dict = None) -> dict:
             observation_id = "_" + str(
                 np.random.choice(list(string.ascii_uppercase + string.digits), 5)
             )
-
-    logging.critical(json.dumps(question_answers))
 
     return question_answers
 
