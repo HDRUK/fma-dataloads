@@ -99,6 +99,7 @@ def send_summary_mail(
 
     if len([*unsupported_version_datasets, *failed_validation]) > 0:
         if len(failed_validation) > 0:
+            print("Start create Pdf")
             attachment = _create_pdf(failed_validation)
 
         message += """<tr><th style="border: 0; color: #29235c; font-size: 18px; text-align: left;">Failed validation/unsupported version: </th></tr>"""
@@ -325,21 +326,29 @@ def _create_pdf(invalid_datasets: list = None) -> bytes:
     """
     pdf = PDF()
 
-    for i in invalid_datasets:
-        pdf.add_page()
-        pdf.set_font("Arial", size=12, style="B")
-        pdf.cell(0, 10, txt=f'{i["summary"]["title"]} ({i["identifier"]})', ln=1)
-        pdf.set_font("Arial", size=10)
+    logging.info(invalid_datasets)
+    try:
+        for i in invalid_datasets:
+            pdf.add_page()
+            # pdf.set_font("Helvetica", size=12, style="B")
+            pdf.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+            pdf.set_font('ArialUnicode', '', 11)
+            summary_title = str(i["summary"]["title"]).encode('utf-8').decode('utf-8')
 
-        for j in i["validation_errors"]:
-            pdf.cell(5, 5, txt=" - ", ln=0)
-            pdf.multi_cell(
-                0,
-                5,
-                txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
-            )
+            pdf.cell(0, 10, txt=f'{summary_title} ({i["identifier"]})', ln=1)
+            pdf.set_font("Helvetica", size=10)
 
-    return pdf.output(dest="S").encode("latin-1")
+            for j in i["validation_errors"]:
+                pdf.cell(5, 5, txt=" - ", ln=0)
+                pdf.multi_cell(
+                    0,
+                    5,
+                    txt=f'{"/".join([str(i) for i in j["path"]])}: {str(j["error"])}',
+                )
+
+        return pdf.output(dest="S").encode('latin-1','ignore')
+    except Exception as error:
+        print("Create Pdf :: ", error)
 
 
 class PDF(FPDF):
@@ -348,11 +357,15 @@ class PDF(FPDF):
     """
 
     def header(self):
-        self.set_font("Arial", "I", 8)
+        # self.set_font("Helvetica", "I", 8)
+        self.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+        self.set_font('ArialUnicode', '', 11)
         self.cell(0, 10, "FMA validation errors", 0, 0, "R")
         self.ln(10)
 
     def footer(self):
         self.set_y(-15)
-        self.set_font("Arial", "I", 8)
+        # self.set_font("Helvetica", "I", 8)
+        self.add_font('ArialUnicode',fname='Arial-Unicode-Regular.ttf',uni=True)
+        self.set_font('ArialUnicode', '', 11)
         self.cell(0, 10, f"{self.page_no()}", 0, 0, "R")

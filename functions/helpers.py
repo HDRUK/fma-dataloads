@@ -3,6 +3,7 @@ Helper functions for comparing lists and transforming data.
 """
 
 import json
+import logging
 import string
 import numpy as np
 
@@ -11,6 +12,8 @@ from datetime import datetime
 from collections.abc import Mapping
 
 from .exceptions import CriticalError
+
+logging.basicConfig(level=logging.INFO)
 
 
 def datasets_to_archive(
@@ -103,6 +106,7 @@ def transform_dataset(
     """
     try:
         dataset = _merge_dictionaries(dataset)
+        dataset = json.loads(json.dumps(dataset, ensure_ascii=True).encode("ascii", "replace"))
 
         # Add publisher identifier to link dataset to Gateway team
         dataset["summary"]["publisher"]["identifier"] = str(publisher["_id"])
@@ -281,6 +285,7 @@ def _generate_question_answers(dataset: dict = None) -> dict:
     INTERNAL: generate the Gateway questionAnswers field given a datasetv2 object.
     """
     question_answers = {}
+    dataset = json.loads(json.dumps(dataset, ensure_ascii=True).encode("ascii", "replace"))
 
     # Summary
     if _keys_exist(dataset, "summary", "title"):
