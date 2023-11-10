@@ -1,11 +1,12 @@
 """
 Functions for retrieving datasets or a dataset from the target server.
 """
-
 import requests
+import logging
+import json
+from json.decoder import JSONDecodeError
 
 from .exceptions import *
-
 
 def get_datasets(url: str = "", headers: dict = None) -> list:
     """
@@ -13,9 +14,16 @@ def get_datasets(url: str = "", headers: dict = None) -> list:
     """
 
     response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
 
     if response.status_code == 200:
-        data = response.json()
+        # data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            print('Response error decoding ::: get_datasets')
+
+        logging.info(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
 
         return data["items"]
 
@@ -49,9 +57,16 @@ def get_dataset(url: str = "", headers: dict = None, dataset_id: str = ""):
     print("get dataset url", updated_url)
 
     response = requests.get(updated_url, headers=headers)
+    response.encoding = 'utf-8'
 
     if response.status_code == 200:
-        data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            print('Response error decoding ::: get_dataset')
+
+        logging.info(json.dumps(data, ensure_ascii=True).encode("ascii", "replace"))
+
         return data
 
     if response.status_code in [401, 403]:

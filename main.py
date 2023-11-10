@@ -250,6 +250,7 @@ def main(custodian_id: str) -> None:
                             publisher=publisher,
                         )
                     )
+
                     unsupported_version_datasets.append(custodian_version)
                     continue
 
@@ -319,7 +320,6 @@ def main(custodian_id: str) -> None:
         ##########################################
         # Emails
         ##########################################
-
         if any(
             len(datasets) > 0
             for datasets in [
@@ -330,14 +330,17 @@ def main(custodian_id: str) -> None:
                 unsupported_version_datasets,
             ]
         ):
-            send_summary_mail(
-                publisher=publisher,
-                archived_datasets=archived_datasets,
-                new_datasets=new_valid_datasets,
-                updated_datasets=updated_valid_datasets,
-                failed_validation=invalid_datasets,
-                unsupported_version_datasets=unsupported_version_datasets,
-            )
+            try:
+                send_summary_mail(
+                    publisher=publisher,
+                    archived_datasets=archived_datasets,
+                    new_datasets=new_valid_datasets,
+                    updated_datasets=updated_valid_datasets,
+                    failed_validation=invalid_datasets,
+                    unsupported_version_datasets=unsupported_version_datasets,
+                )
+            except Exception as error:
+                print(error)
 
     except (CriticalError, RequestError, AuthError) as error:
         # Custom error raised, log error, send email if required, set federation.active to false
